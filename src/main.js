@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { Dungeon } from './dungeon.js';
 import { Player } from './player.js';
+import { Monster } from './monster.js';
 import './style.css';
 
 // Dynamic Map Import
 const maps = import.meta.glob('./maps/*.txt', { query: '?raw', import: 'default', eager: true });
 let currentLevel = 1;
 let dungeon = null;
+let monsters = []; // Store active monsters
 
 // Scene Setup
 const scene = new THREE.Scene();
@@ -56,10 +58,12 @@ function loadLevel(levelIndex) {
         return;
     }
 
-    // Cleanup old dungeon
+    // Cleanup old dungeon and monsters
     if (dungeon) {
         scene.remove(dungeon.getMesh());
     }
+    monsters.forEach(m => m.remove());
+    monsters = [];
 
     // Create new dungeon
     dungeon = new Dungeon(mapContent);
@@ -69,6 +73,24 @@ function loadLevel(levelIndex) {
     player.dungeon = dungeon;
     const startPos = dungeon.getStartPosition();
     camera.position.copy(startPos);
+
+    // Spawn Monster in Level 1
+    if (levelIndex === 1) {
+        const emptySpaces = dungeon.getEmptySpaces();
+        // Filter spaces at least 2 units away from start X
+        const validSpaces = emptySpaces.filter(s => {
+            const dist = Math.sqrt(Math.pow(s.x - startPos.x, 2) + Math.pow(s.z - startPos.z, 2));
+            return dist >= 2;
+        });
+
+        if (validSpaces.length > 0) {
+            const spawnSpot = validSpaces[Math.floor(Math.random() * validSpaces.length)];
+            const monsterPos = new THREE.Vector3(spawnSpot.x, 0, spawnSpot.z);
+            const monster = new Monster(scene, monsterPos);
+            monsters.push(monster);
+            addLog("A shadow moves in the distance...");
+        }
+    }
 
     console.log(`Level ${levelIndex} loaded.`);
     addLog(`Entering Level ${levelIndex}...`);

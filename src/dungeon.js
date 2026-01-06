@@ -6,6 +6,7 @@ export class Dungeon {
         this.group = new THREE.Group();
         this.startPosition = new THREE.Vector3(0, 0, 0);
         this.walls = []; // Store wall bounding boxes for collision
+        this.emptySpaces = []; // Store empty floor coords
         this.generate();
     }
 
@@ -56,6 +57,9 @@ export class Dungeon {
                     const box = new THREE.Box3();
                     box.setFromCenterAndSize(new THREE.Vector3(x, 1, z), new THREE.Vector3(0.8, 2, 0.8));
                     this.exit = box;
+                } else if (char === ' ') {
+                    // Empty floor
+                    this.emptySpaces.push({ x, z });
                 }
             });
         });
@@ -75,5 +79,9 @@ export class Dungeon {
 
     getExit() {
         return this.exit;
+    }
+
+    getEmptySpaces() {
+        return this.emptySpaces;
     }
 }
