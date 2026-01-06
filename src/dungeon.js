@@ -11,9 +11,22 @@ export class Dungeon {
     }
 
     generate() {
+        const loader = new THREE.TextureLoader();
+
+        // Load textures
+        const floorTexture = loader.load('/cobblestone.png');
+        floorTexture.wrapS = THREE.RepeatWrapping;
+        floorTexture.wrapT = THREE.RepeatWrapping;
+        floorTexture.repeat.set(1, 1);
+
+        const wallTexture = loader.load('/stone_bricks.png');
+        wallTexture.wrapS = THREE.RepeatWrapping;
+        wallTexture.wrapT = THREE.RepeatWrapping;
+        wallTexture.repeat.set(1, 2); // 2 units high
+
         // Materials
-        const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x808080 }); // Grey walls
-        const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x404040 }); // Darker floor
+        const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture });
+        const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
         const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x202020 }); // Dark ceiling
         const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown for door
 
