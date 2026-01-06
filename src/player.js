@@ -13,6 +13,23 @@ export class Player {
         this.isLocked = false;
         this.speed = 5.0; // Movement speed
 
+        // Slash Effect
+        const loader = new THREE.TextureLoader();
+        const slashTexture = loader.load('/slash.png');
+        const slashMaterial = new THREE.SpriteMaterial({
+            map: slashTexture,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            opacity: 0,
+            depthTest: false // Ensure it's always on top
+        });
+        this.slashSprite = new THREE.Sprite(slashMaterial);
+        this.slashSprite.visible = false;
+        this.slashSprite.position.set(0, 0, -0.5); // Very close to camera
+        this.slashSprite.scale.set(0.5, 0.5, 1);
+        this.camera.add(this.slashSprite);
+        this.slashTimer = 0;
+
         this._initListeners(domElement);
     }
 
@@ -20,6 +37,8 @@ export class Player {
         domElement.addEventListener('click', () => {
             if (!this.isLocked) {
                 this.controls.lock();
+            } else {
+                this.attack();
             }
         });
 
@@ -82,7 +101,24 @@ export class Player {
         document.addEventListener('keyup', onKeyUp);
     }
 
+    attack() {
+        if (this.slashTimer > 0) return;
+        this.slashTimer = 0.2;
+        this.slashSprite.visible = true;
+        this.slashSprite.material.rotation = Math.random() * Math.PI * 2;
+        this.slashSprite.material.opacity = 1.0;
+    }
+
     update(delta) {
+        // Update Slash
+        if (this.slashTimer > 0) {
+            this.slashTimer -= delta;
+            this.slashSprite.material.opacity = Math.max(0, this.slashTimer / 0.2);
+            if (this.slashTimer <= 0) {
+                this.slashSprite.visible = false;
+            }
+        }
+
         if (!this.isLocked) return;
 
         this.velocity.x -= this.velocity.x * 10.0 * delta;
