@@ -1,4 +1,164 @@
-body {
+body,
+html {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
+  background-color: #000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #eee;
+}
+
+#game-container {
+  width: 100%;
+  height: 80%;
+  position: relative;
+}
+
+#instructions {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 24px;
+  pointer-events: none;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+#hud {
+  width: 100%;
+  height: 20%;
+  background: linear-gradient(to bottom, #1a1a1a 0%, #0d0d0d 100%);
+  border-top: 2px solid #444;
+  display: flex;
+  box-sizing: border-box;
+  padding: 10px;
+  gap: 20px;
+}
+
+#portrait {
+  width: 120px;
+  height: 100%;
+  background: #222;
+  border: 1px solid #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px #000;
+}
+
+#char-portrait {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+#attributes {
+  flex: 0 0 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.stat {
+  margin: 2px 0;
+  color: #f39c12;
+  font-size: 14px;
+}
+
+#inventory {
+  flex: 0 0 400px;
+  display: flex;
+  gap: 15px;
+  border-left: 1px solid #333;
+  border-right: 1px solid #333;
+  padding: 0 15px;
+}
+
+#equipment {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 140px;
+}
+
+.slot-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.slot {
+  width: 32px;
+  height: 32px;
+  background: #222;
+  border: 1px solid #555;
+  border-radius: 4px;
+  box-shadow: inset 0 0 5px #000;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.slot:hover {
+  border-color: #f39c12;
+}
+
+#backpack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 180px;
+}
+
+.backpack-label {
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+#backpack-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 4px;
+}
+
+.backpack-slot {
+  width: 30px;
+  height: 30px;
+}
+
+#log-container {
+  flex: 1;
+  background: #000;
+  border: 1px solid #333;
+  padding: 10px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #bbb;
+}
+
+#log {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+/* Glassmorphism effect for instructions */
+#instructions {
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }

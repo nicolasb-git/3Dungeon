@@ -1,30 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>3D Dungeon Labyrinth</title>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        #instructions {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-family: sans-serif;
-            font-size: 24px;
-            pointer-events: none;
-            text-align: center;
-        }
-    </style>
-  </head>
-  <body>
-    <div id="app"></div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Dungeon Labyrinth</title>
+  <title>3D Dungeon Labyrinth</title>
+</head>
+
+<body>
+  <div id="game-container">
     <div id="instructions">
-        Click to Play<br/>
-        WASD to Move, Mouse to Look
+      Click to Play<br />
+      WASD to Move, Mouse to Look
     </div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+  </div>
+  <div id="hud">
+    <div id="portrait">
+      <img id="char-portrait" src="" alt="Portrait" />
+    </div>
+    <div id="attributes">
+      <div class="stat">HP: <span id="hp-val">100</span></div>
+      <div class="stat">STR: <span id="str-val">10</span></div>
+      <div class="stat">DEF: <span id="def-val">5</span></div>
+    </div>
+    <div id="inventory">
+      <div id="equipment">
+        <div class="slot-row head-row">
+          <div class="slot" id="slot-head" title="Head"></div>
+        </div>
+        <div class="slot-row torso-row">
+          <div class="slot" id="slot-l-arm" title="Left Arm"></div>
+          <div class="slot" id="slot-torso" title="Torso"></div>
+          <div class="slot" id="slot-r-arm" title="Right Arm"></div>
+        </div>
+        <div class="slot-row arm-row">
+          <div class="slot" id="slot-l-hand" title="Left Hand"></div>
+          <div class="slot" id="slot-legs" title="Legs"></div>
+          <div class="slot" id="slot-r-hand" title="Right Hand"></div>
+        </div>
+        <div class="slot-row boot-row">
+          <div class="slot" id="slot-boots" title="Boots"></div>
+        </div>
+      </div>
+      <div id="backpack">
+        <div class="backpack-label">BACKPACK</div>
+        <div id="backpack-grid">
+          <!-- 10 slots -->
+          <div class="slot backpack-slot" title="Backpack Slot 1"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 2"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 3"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 4"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 5"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 6"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 7"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 8"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 9"></div>
+          <div class="slot backpack-slot" title="Backpack Slot 10"></div>
+        </div>
+      </div>
+    </div>
+    <div id="log-container">
+      <div id="log">
+        Welcome to the Dungeon...
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>

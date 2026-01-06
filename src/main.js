@@ -17,8 +17,8 @@ scene.background = new THREE.Color(fogColor);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
+document.getElementById('game-container').appendChild(renderer.domElement);
 
 // Lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -29,8 +29,20 @@ pointLight.position.set(0, 2, 0);
 camera.add(pointLight);
 scene.add(camera);
 
+// HUD UI references
+const portraitImg = document.getElementById('char-portrait');
+const logEl = document.getElementById('log');
+
+portraitImg.src = '/portrait.png';
+
+function addLog(message) {
+    const entry = document.createElement('div');
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    logEl.insertBefore(entry, logEl.firstChild);
+}
+
 // Player (Initialize once)
-const player = new Player(camera, document.body, null); // Dungeon passed later
+const player = new Player(camera, document.getElementById('game-container'), null); // Dungeon passed later
 
 function loadLevel(levelIndex) {
     // Find map file
@@ -39,6 +51,7 @@ function loadLevel(levelIndex) {
 
     if (!mapContent) {
         console.log("No more levels or map not found: " + mapPath);
+        addLog("You have reached the end of the dungeon!");
         alert("You have reached the end of the dungeon!");
         return;
     }
@@ -58,6 +71,7 @@ function loadLevel(levelIndex) {
     camera.position.copy(startPos);
 
     console.log(`Level ${levelIndex} loaded.`);
+    addLog(`Entering Level ${levelIndex}...`);
 }
 
 // Initial Load
@@ -74,9 +88,9 @@ player.controls.addEventListener('unlock', () => {
 
 // Resize
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = window.innerWidth / (window.innerHeight * 0.8);
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
 });
 
 // Loop
