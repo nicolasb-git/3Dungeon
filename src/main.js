@@ -31,11 +31,41 @@ pointLight.position.set(0, 2, 0);
 camera.add(pointLight);
 scene.add(camera);
 
-// HUD UI references
+// Remove old listener from player.js if it exists (actually we should remove it from there directly but let's override here)
+// Wait, player.js has its own listener. I should probably modify it there or handle it here.
+// Let's modify player.js to NOT have the listener and handle it all in main.js.
 const portraitImg = document.getElementById('char-portrait');
 const logEl = document.getElementById('log');
 
+// Click Handler
+window.addEventListener('click', () => {
+    if (!player.isLocked) {
+        player.controls.lock();
+    } else {
+        const hitResult = player.attack(monsters);
+        if (hitResult) {
+            addLog(`You hit the monster for ${hitResult.damage} damage!`);
+            if (hitResult.isDead) {
+                addLog("The monster collapses into dust.");
+            }
+        }
+    }
+});
+
 portraitImg.src = '/portrait.png';
+
+// Initial Equipment
+const swordSlot = document.getElementById('slot-r-hand');
+let cooldownOverlay = null;
+
+if (swordSlot) {
+    swordSlot.classList.add('equipped');
+    swordSlot.style.backgroundImage = "url('/sword_icon.png')";
+
+    cooldownOverlay = document.createElement('div');
+    cooldownOverlay.className = 'cooldown-overlay';
+    swordSlot.appendChild(cooldownOverlay);
+}
 
 function addLog(message) {
     const entry = document.createElement('div');
@@ -122,7 +152,25 @@ function animate() {
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
-    player.update(delta);
+
+    // Update monsters
+    monsters.forEach(m => m.update());
+
+    player.update(delta, monsters);
+
+    // Update Cooldown UI
+    if (cooldownOverlay) {
+        const percent = (player.attackCooldown / player.maxAttackCooldown) * 100;
+        cooldownOverlay.style.height = `${percent}%`;
+    }
+
+    // Cleanup dead monsters
+    for (let i = monsters.length - 1; i >= 0; i--) {
+        if (monsters[i].hp <= 0) {
+            monsters[i].remove();
+            monsters.splice(i, 1);
+        }
+    }
 
     // Check Level Exit
     if (dungeon && dungeon.getExit()) {

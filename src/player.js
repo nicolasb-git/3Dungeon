@@ -12,6 +12,7 @@ export class Player {
         this.direction = new THREE.Vector3();
         this.isLocked = false;
         this.speed = 5.0; // Movement speed
+        this.weapon = 'Basic Sword';
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
@@ -29,19 +30,13 @@ export class Player {
         this.slashSprite.scale.set(0.5, 0.5, 1);
         this.camera.add(this.slashSprite);
         this.slashTimer = 0;
+        this.attackCooldown = 0;
+        this.maxAttackCooldown = 2.0;
 
         this._initListeners(domElement);
     }
 
     _initListeners(domElement) {
-        domElement.addEventListener('click', () => {
-            if (!this.isLocked) {
-                this.controls.lock();
-            } else {
-                this.attack();
-            }
-        });
-
         this.controls.addEventListener('lock', () => {
             this.isLocked = true;
         });
@@ -101,15 +96,46 @@ export class Player {
         document.addEventListener('keyup', onKeyUp);
     }
 
-    attack() {
-        if (this.slashTimer > 0) return;
-        this.slashTimer = 0.2;
+    attack(monsters = []) {
+        if (this.attackCooldown > 0) return null;
+        this.attackCooldown = this.maxAttackCooldown;
+        this.slashTimer = 0.2; // Keep visual animation fast
         this.slashSprite.visible = true;
         this.slashSprite.material.rotation = Math.random() * Math.PI * 2;
         this.slashSprite.material.opacity = 1.0;
+
+        // Hit Detection
+        let hitInfo = null;
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        const playerPos = this.camera.position;
+
+        for (const monster of monsters) {
+            if (!monster.sprite) continue;
+
+            // Check distance
+            const dist = playerPos.distanceTo(monster.sprite.position);
+            if (dist < 2.0) {
+                // Check if monster is in front of player
+                const mDir = monster.sprite.position.clone().sub(playerPos).normalize();
+                const dot = forward.dot(mDir);
+
+                if (dot > 0.5) { // Roughly 60 degrees cone
+                    const damage = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4
+                    const isDead = monster.takeDamage(damage);
+                    hitInfo = { damage, isDead, monster };
+                    break; // Hit one monster per slash
+                }
+            }
+        }
+        return hitInfo;
     }
 
-    update(delta) {
+    update(delta, monsters = []) {
+        // Update Cooldown
+        if (this.attackCooldown > 0) {
+            this.attackCooldown -= delta;
+        }
+
         // Update Slash
         if (this.slashTimer > 0) {
             this.slashTimer -= delta;
@@ -194,6 +220,17 @@ export class Player {
             }
         }
 
+        // Monster Collision
+        if (!collision) {
+            for (const monster of monsters) {
+                const monsterBox = monster.getBoundingBox();
+                if (monsterBox && playerBox.intersectsBox(monsterBox)) {
+                    collision = true;
+                    break;
+                }
+            }
+        }
+
         if (!collision) {
             this.camera.position.copy(nextPos);
         } else {
@@ -203,6 +240,12 @@ export class Player {
             let colX = false;
             for (const w of walls) { if (playerBox.intersectsBox(w)) { colX = true; break; } }
             if (!colX) {
+                for (const m of monsters) {
+                    const mb = m.getBoundingBox();
+                    if (mb && playerBox.intersectsBox(mb)) { colX = true; break; }
+                }
+            }
+            if (!colX) {
                 this.camera.position.x = nextPosX.x;
             }
 
@@ -210,6 +253,12 @@ export class Player {
             playerBox.setFromCenterAndSize(nextPosZ, new THREE.Vector3(playerSize, 1.8, playerSize));
             let colZ = false;
             for (const w of walls) { if (playerBox.intersectsBox(w)) { colZ = true; break; } }
+            if (!colZ) {
+                for (const m of monsters) {
+                    const mb = m.getBoundingBox();
+                    if (mb && playerBox.intersectsBox(mb)) { colZ = true; break; }
+                }
+            }
             if (!colZ) {
                 this.camera.position.z = nextPosZ.z; // Note: if we updated X, we should ideally use updated X for Z check or do them independently? 
                 // Independent is safer for corners.

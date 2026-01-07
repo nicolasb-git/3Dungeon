@@ -3,6 +3,7 @@ import * as THREE from 'three';
 export class Monster {
     constructor(scene, position) {
         this.scene = scene;
+        this.hp = 10;
 
         // Load monster texture with chroma key
         const loader = new THREE.TextureLoader();
@@ -42,10 +43,30 @@ export class Monster {
             this.sprite.position.y = 0.4; // Half height since scale is 0.8
 
             this.scene.add(this.sprite);
+
+            // Initialize Bounding Box
+            this.box = new THREE.Box3();
+            this.updateBox();
         });
     }
 
+    updateBox() {
+        if (this.sprite) {
+            this.box.setFromCenterAndSize(this.sprite.position, new THREE.Vector3(0.6, 0.8, 0.6));
+        }
+    }
+
+    getBoundingBox() {
+        return this.box;
+    }
+
+    takeDamage(amount) {
+        this.hp -= amount;
+        return this.hp <= 0;
+    }
+
     update() {
+        this.updateBox();
     }
 
     remove() {

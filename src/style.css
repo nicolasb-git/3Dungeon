@@ -108,10 +108,32 @@ html {
   box-shadow: inset 0 0 5px #000;
   transition: border-color 0.2s;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .slot:hover {
   border-color: #f39c12;
+}
+
+.slot.equipped {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  /* Good for pixel art icons */
+}
+
+.cooldown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  /* Default height */
+  background: rgba(128, 128, 128, 0.6);
+  pointer-events: none;
+  transition: height 0.1s linear;
 }
 
 #backpack {
