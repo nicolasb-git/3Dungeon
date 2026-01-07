@@ -176,11 +176,96 @@ html {
 
 #log {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 }
 
 /* Glassmorphism effect for instructions */
 #instructions {
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Combat Effects */
+#damage-numbers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.damage-number {
+  position: absolute;
+  color: #ff0000;
+  font-weight: 900;
+  font-size: 48px;
+  text-shadow: 3px 3px 0px #000, 0 0 20px #8b0000;
+  font-family: 'Courier New', Courier, monospace;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  animation: float-bloody 1s forwards;
+}
+
+.damage-number.player {
+  color: #a020f0;
+  /* Purple */
+  text-shadow: 3px 3px 0px #000, 0 0 20px #4b0082;
+  font-size: 54px;
+  /* Slightly larger for player hits */
+}
+
+@keyframes float-bloody {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+    filter: blur(0px);
+  }
+
+  20% {
+    transform: translate(-50%, -60%) scale(1.2) rotate(5deg);
+  }
+
+  40% {
+    transform: translate(-55%, -70%) scale(1) rotate(-5deg);
+  }
+
+  100% {
+    transform: translate(-50%, -150%) scale(1.5);
+    opacity: 0;
+    filter: blur(5px);
+  }
+}
+
+#blood-flash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, transparent 30%, rgba(139, 0, 0, 0.6) 100%),
+    rgba(139, 0, 0, 0.1);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 10;
+}
+
+#blood-flash.active {
+  animation: flash-blood 0.4s ease-out forwards;
+}
+
+@keyframes flash-blood {
+  0% {
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }

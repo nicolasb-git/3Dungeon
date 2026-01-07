@@ -44,9 +44,12 @@ window.addEventListener('click', () => {
     } else {
         const hitResult = player.attack(monsters);
         if (hitResult) {
-            addLog(`You hit the monster for ${hitResult.damage} damage!`);
+            addLog(`You hit the ${hitResult.monster.name} for ${hitResult.damage} damage!`);
+            if (hitResult.monster.sprite) {
+                showDamageNumber(hitResult.monster.sprite.position, hitResult.damage);
+            }
             if (hitResult.isDead) {
-                addLog("The monster collapses into dust.");
+                addLog(`The ${hitResult.monster.name} collapses into dust.`);
             }
         }
     }
@@ -70,7 +73,43 @@ if (swordSlot) {
 function addLog(message) {
     const entry = document.createElement('div');
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-    logEl.insertBefore(entry, logEl.firstChild);
+    logEl.appendChild(entry);
+
+    const container = document.getElementById('log-container');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+    }
+}
+
+function showDamageNumber(worldPosition, amount, className = '') {
+    let x, y;
+
+    if (worldPosition) {
+        const vector = worldPosition.clone().project(camera);
+        x = (vector.x + 1) / 2 * window.innerWidth;
+        y = -(vector.y - 1) / 2 * (window.innerHeight * 0.8);
+    } else {
+        // Default to center if no position provided (e.g. for player hits)
+        x = window.innerWidth / 2 + (Math.random() - 0.5) * 100;
+        y = (window.innerHeight * 0.8) / 2 + (Math.random() - 0.5) * 100;
+    }
+
+    const el = document.createElement('div');
+    el.className = `damage-number ${className}`;
+    el.textContent = amount;
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+
+    document.getElementById('damage-numbers').appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+}
+
+function triggerBloodFlash() {
+    const flash = document.getElementById('blood-flash');
+    if (!flash) return;
+    flash.classList.remove('active');
+    void flash.offsetWidth; // Trigger reflow
+    flash.classList.add('active');
 }
 
 // Player (Initialize once)
@@ -154,7 +193,25 @@ function animate() {
     const delta = clock.getDelta();
 
     // Update monsters
-    monsters.forEach(m => m.update());
+    monsters.forEach(m => {
+        m.update(delta);
+
+        // Attack Player logic
+        const playerPos = camera.position;
+        const monsterPos = m.sprite ? m.sprite.position : null;
+
+        if (monsterPos && playerPos.distanceTo(monsterPos) < 1.5) {
+            if (m.attackCooldown <= 0) {
+                const damage = m.getAttackDamage();
+                player.takeDamage(damage);
+                triggerBloodFlash();
+                showDamageNumber(null, damage, 'player');
+                m.playAttackAnimation();
+                addLog(`The ${m.name} hits you for ${damage} damage!`);
+                m.attackCooldown = m.maxAttackCooldown;
+            }
+        }
+    });
 
     player.update(delta, monsters);
 

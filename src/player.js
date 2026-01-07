@@ -13,6 +13,8 @@ export class Player {
         this.isLocked = false;
         this.speed = 5.0; // Movement speed
         this.weapon = 'Basic Sword';
+        this.hp = 100;
+        this.maxHp = 100;
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
@@ -94,6 +96,13 @@ export class Player {
 
         document.addEventListener('keydown', onKeyDown);
         document.addEventListener('keyup', onKeyUp);
+    }
+
+    takeDamage(amount) {
+        this.hp = Math.max(0, this.hp - amount);
+        const hpEl = document.getElementById('hp-val');
+        if (hpEl) hpEl.textContent = this.hp;
+        return this.hp <= 0;
     }
 
     attack(monsters = []) {
