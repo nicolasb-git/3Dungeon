@@ -37,7 +37,7 @@ export class Player {
         this.camera.add(this.slashSprite);
         this.slashTimer = 0;
         this.attackCooldown = 0;
-        this.maxAttackCooldown = 2.0;
+        this.maxAttackCooldown = 0.5;
         this.audioCtx = null;
 
         this._initListeners(domElement);

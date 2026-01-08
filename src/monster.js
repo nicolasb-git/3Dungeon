@@ -8,7 +8,7 @@ export class Monster {
         this.hp = 40;
         this.attackDamage = { min: 2, max: 3 };
         this.attackCooldown = 0;
-        this.maxAttackCooldown = 3.0;
+        this.maxAttackCooldown = 0.5;
         this.speed = 1.0; // Movement speed
         this.spottedPlayer = false;
 
