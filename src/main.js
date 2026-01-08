@@ -249,6 +249,8 @@ function animate() {
             const pos = monsters[i].sprite.position.clone();
             const goldAmount = Math.floor(Math.random() * 11) + 10; // 10-20 gold
             loots.push(new Loot(scene, pos, goldAmount));
+            player.addXP(20);
+            addLog(`You gained 20 experience!`);
             monsters[i].remove();
             monsters.splice(i, 1);
         }

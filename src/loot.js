@@ -6,6 +6,7 @@ export class Loot {
         this.position = position.clone();
         this.amount = amount;
         this.collected = false;
+        this.removed = false;
 
         const loader = new THREE.TextureLoader();
         loader.load('/gold_coins.png', (texture) => {
@@ -33,6 +34,8 @@ export class Loot {
             const newTexture = new THREE.CanvasTexture(canvas);
             newTexture.colorSpace = THREE.SRGBColorSpace;
 
+            if (this.removed) return; // Don't add if already picked up
+
             const material = new THREE.SpriteMaterial({ map: newTexture, transparent: true });
             this.sprite = new THREE.Sprite(material);
             this.sprite.scale.set(0.4, 0.4, 1);
@@ -56,6 +59,7 @@ export class Loot {
     }
 
     remove() {
+        this.removed = true;
         if (this.sprite) {
             this.scene.remove(this.sprite);
         }

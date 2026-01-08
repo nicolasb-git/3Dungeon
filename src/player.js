@@ -18,6 +18,7 @@ export class Player {
         this.str = 10;
         this.def = 0;
         this.gold = 0;
+        this.xp = 0;
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
@@ -150,15 +151,22 @@ export class Player {
         const strEl = document.getElementById('str-val');
         const defEl = document.getElementById('def-val');
         const goldEl = document.getElementById('gold-val');
+        const xpEl = document.getElementById('xp-val');
 
         if (hpEl) hpEl.textContent = this.hp;
         if (strEl) strEl.textContent = this.str;
         if (defEl) defEl.textContent = this.def;
         if (goldEl) goldEl.textContent = this.gold;
+        if (xpEl) xpEl.textContent = this.xp;
     }
 
     addGold(amount) {
         this.gold += amount;
+        this.updateUI();
+    }
+
+    addXP(amount) {
+        this.xp += amount;
         this.updateUI();
     }
 
