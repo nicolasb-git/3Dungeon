@@ -204,6 +204,7 @@ function animate() {
             if (m.attackCooldown <= 0) {
                 const damage = m.getAttackDamage();
                 player.takeDamage(damage);
+                player._playScratchSound();
                 triggerBloodFlash();
                 showDamageNumber(null, damage, 'player');
                 m.playAttackAnimation();

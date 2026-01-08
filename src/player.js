@@ -34,6 +34,7 @@ export class Player {
         this.slashTimer = 0;
         this.attackCooldown = 0;
         this.maxAttackCooldown = 2.0;
+        this.audioCtx = null;
 
         this._initListeners(domElement);
     }
@@ -112,6 +113,7 @@ export class Player {
         this.slashSprite.visible = true;
         this.slashSprite.material.rotation = Math.random() * Math.PI * 2;
         this.slashSprite.material.opacity = 1.0;
+        this._playSlashSound();
 
         // Hit Detection
         let hitInfo = null;
@@ -137,6 +139,107 @@ export class Player {
             }
         }
         return hitInfo;
+    }
+
+    _playSlashSound() {
+        if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+
+        const oscillator = this.audioCtx.createOscillator();
+        const noiseNode = this.audioCtx.createBufferSource();
+        const gainNode = this.audioCtx.createGain();
+        const filterNode = this.audioCtx.createBiquadFilter();
+
+        // Create white noise for the 'whoosh'
+        const bufferSize = this.audioCtx.sampleRate * 0.2;
+        const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        noiseNode.buffer = buffer;
+
+        // Filter for a sharper slash sound
+        filterNode.type = 'bandpass';
+        filterNode.frequency.setValueAtTime(1000, this.audioCtx.currentTime);
+        filterNode.frequency.exponentialRampToValueAtTime(3000, this.audioCtx.currentTime + 0.1);
+        filterNode.Q.setValueAtTime(1, this.audioCtx.currentTime);
+
+        // Gain envelope
+        gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, this.audioCtx.currentTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.2);
+
+        noiseNode.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(this.audioCtx.destination);
+
+        noiseNode.start();
+        noiseNode.stop(this.audioCtx.currentTime + 0.2);
+
+        // Add a subtle metal ring
+        const oscillator2 = this.audioCtx.createOscillator();
+        const gainNode2 = this.audioCtx.createGain();
+        oscillator2.type = 'sine';
+        oscillator2.frequency.setValueAtTime(800, this.audioCtx.currentTime);
+        oscillator2.frequency.exponentialRampToValueAtTime(400, this.audioCtx.currentTime + 0.1);
+
+        gainNode2.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        gainNode2.gain.linearRampToValueAtTime(0.1, this.audioCtx.currentTime + 0.01);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.15);
+
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(this.audioCtx.destination);
+
+        oscillator2.start();
+        oscillator2.stop(this.audioCtx.currentTime + 0.15);
+    }
+
+    _playScratchSound() {
+        if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+
+        const bufferSize = this.audioCtx.sampleRate * 0.15;
+        const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        // Noise with some structure for "scratching"
+        for (let i = 0; i < bufferSize; i++) {
+            const noise = Math.random() * 2 - 1;
+            const sine = Math.sin(i * 0.1); // Low frequency rumble/scratch
+            data[i] = (noise * 0.7 + sine * 0.3) * (1 - i / bufferSize);
+        }
+
+        const noiseNode = this.audioCtx.createBufferSource();
+        noiseNode.buffer = buffer;
+
+        const filterNode = this.audioCtx.createBiquadFilter();
+        filterNode.type = 'highpass';
+        filterNode.frequency.setValueAtTime(400, this.audioCtx.currentTime);
+        filterNode.frequency.exponentialRampToValueAtTime(1200, this.audioCtx.currentTime + 0.1);
+
+        const gainNode = this.audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.4, this.audioCtx.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.15);
+
+        noiseNode.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(this.audioCtx.destination);
+
+        noiseNode.start();
+        noiseNode.stop(this.audioCtx.currentTime + 0.15);
     }
 
     update(delta, monsters = []) {
