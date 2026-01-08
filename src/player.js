@@ -125,7 +125,7 @@ export class Player {
 
             // Check distance
             const dist = playerPos.distanceTo(monster.sprite.position);
-            if (dist < 2.0) {
+            if (dist < 1.0) {
                 // Check if monster is in front of player
                 const mDir = monster.sprite.position.clone().sub(playerPos).normalize();
                 const dot = forward.dot(mDir);

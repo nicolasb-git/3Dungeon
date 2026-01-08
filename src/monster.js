@@ -9,6 +9,8 @@ export class Monster {
         this.attackDamage = { min: 2, max: 3 };
         this.attackCooldown = 0;
         this.maxAttackCooldown = 3.0;
+        this.speed = 1.0; // Movement speed
+        this.spottedPlayer = false;
 
         this.textures = { idle: null, attack: null };
         this.currentState = 'idle';
@@ -117,6 +119,76 @@ export class Monster {
                     this.sprite.scale.set(0.8, 0.8, 1); // Reset scale
                 }
             }
+        }
+
+        this.updateBox();
+    }
+
+    hasLineOfSight(playerPos, walls) {
+        if (!this.sprite) return false;
+
+        const start = this.sprite.position.clone();
+        start.y = 0.5; // Ray height at eye level
+        const end = playerPos.clone();
+        end.y = 0.5;
+
+        const direction = end.clone().sub(start).normalize();
+        const distanceToPlayer = start.distanceTo(end);
+
+        const ray = new THREE.Ray(start, direction);
+        const intersection = new THREE.Vector3();
+
+        for (const wallBox of walls) {
+            if (ray.intersectBox(wallBox, intersection)) {
+                if (start.distanceTo(intersection) < distanceToPlayer) {
+                    return false; // Wall is blocking
+                }
+            }
+        }
+        return true;
+    }
+
+    moveTowards(targetPos, delta, walls) {
+        if (!this.sprite || this.currentState === 'attack') return;
+
+        const dir = targetPos.clone().sub(this.sprite.position);
+        dir.y = 0;
+
+        if (dir.length() < 0.6) return; // Keep a small distance to avoid overlapping player
+
+        dir.normalize();
+        const movement = dir.multiplyScalar(this.speed * delta);
+        const nextPos = this.sprite.position.clone().add(movement);
+
+        // Movement Collision check
+        const testBox = new THREE.Box3().setFromCenterAndSize(
+            nextPos,
+            new THREE.Vector3(0.4, 0.8, 0.4)
+        );
+
+        let collision = false;
+        for (const wall of walls) {
+            if (testBox.intersectsBox(wall)) {
+                collision = true;
+                break;
+            }
+        }
+
+        if (!collision) {
+            this.sprite.position.copy(nextPos);
+        } else {
+            // Try sliding (X then Z)
+            const nextPosX = this.sprite.position.clone().add(new THREE.Vector3(movement.x, 0, 0));
+            testBox.setFromCenterAndSize(nextPosX, new THREE.Vector3(0.4, 0.8, 0.4));
+            let colX = false;
+            for (const w of walls) { if (testBox.intersectsBox(w)) { colX = true; break; } }
+            if (!colX) this.sprite.position.x = nextPosX.x;
+
+            const nextPosZ = this.sprite.position.clone().add(new THREE.Vector3(0, 0, movement.z));
+            testBox.setFromCenterAndSize(nextPosZ, new THREE.Vector3(0.4, 0.8, 0.4));
+            let colZ = false;
+            for (const w of walls) { if (testBox.intersectsBox(w)) { colZ = true; break; } }
+            if (!colZ) this.sprite.position.z = nextPosZ.z;
         }
 
         this.updateBox();

@@ -196,20 +196,36 @@ function animate() {
     monsters.forEach(m => {
         m.update(delta);
 
-        // Attack Player logic
+        // Attack/Chase Player logic
         const playerPos = camera.position;
         const monsterPos = m.sprite ? m.sprite.position : null;
 
-        if (monsterPos && playerPos.distanceTo(monsterPos) < 1.5) {
-            if (m.attackCooldown <= 0) {
-                const damage = m.getAttackDamage();
-                player.takeDamage(damage);
-                player._playScratchSound();
-                triggerBloodFlash();
-                showDamageNumber(null, damage, 'player');
-                m.playAttackAnimation();
-                addLog(`The ${m.name} hits you for ${damage} damage!`);
-                m.attackCooldown = m.maxAttackCooldown;
+        if (monsterPos) {
+            const dist = playerPos.distanceTo(monsterPos);
+
+            // Initial spot check
+            if (!m.spottedPlayer && m.hasLineOfSight(playerPos, dungeon.getWalls()) && dist < 10) {
+                m.spottedPlayer = true;
+                addLog(`The ${m.name} has spotted you!`);
+            }
+
+            if (m.spottedPlayer) {
+                if (dist < 1.0) {
+                    // Attack range
+                    if (m.attackCooldown <= 0) {
+                        const damage = m.getAttackDamage();
+                        player.takeDamage(damage);
+                        player._playScratchSound();
+                        triggerBloodFlash();
+                        showDamageNumber(null, damage, 'player');
+                        m.playAttackAnimation();
+                        addLog(`The ${m.name} hits you for ${damage} damage!`);
+                        m.attackCooldown = m.maxAttackCooldown;
+                    }
+                } else {
+                    // Move towards player (persistent even if LOS is lost)
+                    m.moveTowards(playerPos, delta, dungeon.getWalls());
+                }
             }
         }
     });
