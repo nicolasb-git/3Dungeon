@@ -1,24 +1,27 @@
 import * as THREE from 'three';
 
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { Weapon } from './weapon.js';
 
 export class Player {
-    constructor(camera, domElement, dungeon) {
+    constructor(camera, domElement, characterClass) {
         this.camera = camera;
-        this.dungeon = dungeon;
         this.controls = new PointerLockControls(camera, domElement);
+        this.charClass = characterClass;
 
         this.velocity = new THREE.Vector3();
         this.direction = new THREE.Vector3();
         this.isLocked = false;
         this.speed = 5.0; // Movement speed
-        this.weapon = 'Basic Sword';
-        this.hp = 100;
-        this.maxHp = 100;
-        this.str = 10;
-        this.def = 0;
+
+        // Initialize stats from character class
+        this.hp = characterClass.hp;
+        this.maxHp = characterClass.hp;
+        this.str = characterClass.str;
+        this.def = characterClass.def;
         this.gold = 0;
         this.xp = 0;
+        this.weapon = characterClass.weapon;
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
@@ -35,9 +38,9 @@ export class Player {
         this.slashSprite.position.set(0, 0, -0.5); // Very close to camera
         this.slashSprite.scale.set(0.5, 0.5, 1);
         this.camera.add(this.slashSprite);
+
         this.slashTimer = 0;
         this.attackCooldown = 0;
-        this.maxAttackCooldown = 0.5;
         this.audioCtx = null;
 
         this._initListeners(domElement);
@@ -112,7 +115,7 @@ export class Player {
 
     attack(monsters = []) {
         if (this.attackCooldown > 0) return null;
-        this.attackCooldown = this.maxAttackCooldown;
+        this.attackCooldown = this.weapon.cooldown;
         this.slashTimer = 0.2; // Keep visual animation fast
         this.slashSprite.visible = true;
         this.slashSprite.material.rotation = Math.random() * Math.PI * 2;
@@ -135,7 +138,7 @@ export class Player {
                 const dot = forward.dot(mDir);
 
                 if (dot > 0.5) { // Roughly 60 degrees cone
-                    const baseDamage = Math.floor(Math.random() * 3) + 2; // Base (2, 3, or 4)
+                    const baseDamage = this.weapon.getDamage();
                     const totalDamage = baseDamage + this.str;
                     const isDead = monster.takeDamage(totalDamage);
                     hitInfo = { damage: totalDamage, baseDamage, str: this.str, isDead, monster };

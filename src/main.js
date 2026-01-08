@@ -3,6 +3,7 @@ import { Dungeon } from './dungeon.js';
 import { Player } from './player.js';
 import { Monster } from './monster.js';
 import { Loot } from './loot.js';
+import { Warrior } from './classes.js';
 import './style.css';
 
 // Dynamic Map Import
@@ -115,7 +116,8 @@ function triggerBloodFlash() {
 }
 
 // Player (Initialize once)
-const player = new Player(camera, document.getElementById('game-container'), null); // Dungeon passed later
+const warrior = new Warrior();
+const player = new Player(camera, document.getElementById('game-container'), warrior);
 player.updateUI();
 
 function loadLevel(levelIndex) {
