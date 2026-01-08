@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Dungeon } from './dungeon.js';
 import { Player } from './player.js';
 import { Monster } from './monster.js';
+import { Loot } from './loot.js';
 import './style.css';
 
 // Dynamic Map Import
@@ -9,6 +10,7 @@ const maps = import.meta.glob('./maps/*.txt', { query: '?raw', import: 'default'
 let currentLevel = 1;
 let dungeon = null;
 let monsters = []; // Store active monsters
+let loots = []; // Store active loot
 
 // Scene Setup
 const scene = new THREE.Scene();
@@ -134,6 +136,8 @@ function loadLevel(levelIndex) {
     }
     monsters.forEach(m => m.remove());
     monsters = [];
+    loots.forEach(l => l.remove());
+    loots = [];
 
     // Create new dungeon
     dungeon = new Dungeon(mapContent);
@@ -239,11 +243,30 @@ function animate() {
         cooldownOverlay.style.height = `${percent}%`;
     }
 
-    // Cleanup dead monsters
+    // Cleanup dead monsters and drop loot
     for (let i = monsters.length - 1; i >= 0; i--) {
         if (monsters[i].hp <= 0) {
+            const pos = monsters[i].sprite.position.clone();
+            const goldAmount = Math.floor(Math.random() * 11) + 10; // 10-20 gold
+            loots.push(new Loot(scene, pos, goldAmount));
             monsters[i].remove();
             monsters.splice(i, 1);
+        }
+    }
+
+    // Update Loots / Pickups
+    const playerBox = new THREE.Box3().setFromCenterAndSize(
+        camera.position,
+        new THREE.Vector3(0.5, 1.8, 0.5)
+    );
+
+    for (let i = loots.length - 1; i >= 0; i--) {
+        if (playerBox.intersectsBox(loots[i].getBoundingBox())) {
+            const amount = loots[i].amount;
+            player.addGold(amount);
+            addLog(`You picked up ${amount} gold coins!`);
+            loots[i].remove();
+            loots.splice(i, 1);
         }
     }
 
