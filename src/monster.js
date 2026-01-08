@@ -5,7 +5,7 @@ export class Monster {
         this.scene = scene;
         this.initialPosition = position.clone();
         this.name = "Lesser Shadow";
-        this.hp = 10;
+        this.hp = 40;
         this.attackDamage = { min: 2, max: 3 };
         this.attackCooldown = 0;
         this.maxAttackCooldown = 3.0;

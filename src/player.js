@@ -15,6 +15,8 @@ export class Player {
         this.weapon = 'Basic Sword';
         this.hp = 100;
         this.maxHp = 100;
+        this.str = 10;
+        this.def = 0;
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
@@ -100,10 +102,10 @@ export class Player {
     }
 
     takeDamage(amount) {
-        this.hp = Math.max(0, this.hp - amount);
-        const hpEl = document.getElementById('hp-val');
-        if (hpEl) hpEl.textContent = this.hp;
-        return this.hp <= 0;
+        const actualDamage = Math.max(0, amount - this.def);
+        this.hp = Math.max(0, this.hp - actualDamage);
+        this.updateUI();
+        return { actualDamage, baseDamage: amount, def: this.def, isDead: this.hp <= 0 };
     }
 
     attack(monsters = []) {
@@ -131,14 +133,25 @@ export class Player {
                 const dot = forward.dot(mDir);
 
                 if (dot > 0.5) { // Roughly 60 degrees cone
-                    const damage = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4
-                    const isDead = monster.takeDamage(damage);
-                    hitInfo = { damage, isDead, monster };
+                    const baseDamage = Math.floor(Math.random() * 3) + 2; // Base (2, 3, or 4)
+                    const totalDamage = baseDamage + this.str;
+                    const isDead = monster.takeDamage(totalDamage);
+                    hitInfo = { damage: totalDamage, baseDamage, str: this.str, isDead, monster };
                     break; // Hit one monster per slash
                 }
             }
         }
         return hitInfo;
+    }
+
+    updateUI() {
+        const hpEl = document.getElementById('hp-val');
+        const strEl = document.getElementById('str-val');
+        const defEl = document.getElementById('def-val');
+
+        if (hpEl) hpEl.textContent = this.hp;
+        if (strEl) strEl.textContent = this.str;
+        if (defEl) defEl.textContent = this.def;
     }
 
     _playSlashSound() {

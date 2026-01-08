@@ -44,7 +44,7 @@ window.addEventListener('click', () => {
     } else {
         const hitResult = player.attack(monsters);
         if (hitResult) {
-            addLog(`You hit the ${hitResult.monster.name} for ${hitResult.damage} damage!`);
+            addLog(`You hit the ${hitResult.monster.name} for ${hitResult.damage} damage (${hitResult.baseDamage} + ${hitResult.str} STR)!`);
             if (hitResult.monster.sprite) {
                 showDamageNumber(hitResult.monster.sprite.position, hitResult.damage);
             }
@@ -114,6 +114,7 @@ function triggerBloodFlash() {
 
 // Player (Initialize once)
 const player = new Player(camera, document.getElementById('game-container'), null); // Dungeon passed later
+player.updateUI();
 
 function loadLevel(levelIndex) {
     // Find map file
@@ -213,13 +214,13 @@ function animate() {
                 if (dist < 1.0) {
                     // Attack range
                     if (m.attackCooldown <= 0) {
-                        const damage = m.getAttackDamage();
-                        player.takeDamage(damage);
+                        const baseDamage = m.getAttackDamage();
+                        const result = player.takeDamage(baseDamage);
                         player._playScratchSound();
                         triggerBloodFlash();
-                        showDamageNumber(null, damage, 'player');
+                        showDamageNumber(null, result.actualDamage, 'player');
                         m.playAttackAnimation();
-                        addLog(`The ${m.name} hits you for ${damage} damage!`);
+                        addLog(`The ${m.name} hits you for ${result.actualDamage} damage (${result.baseDamage} - ${result.def} DEF)!`);
                         m.attackCooldown = m.maxAttackCooldown;
                     }
                 } else {
