@@ -12,3 +12,10 @@ export class Armor extends Item {
         this.defense = defense;
     }
 }
+
+export class Potion extends Item {
+    constructor(name, healAmount, iconUrl) {
+        super(name, 'consumable', iconUrl);
+        this.healAmount = healAmount;
+    }
+}

@@ -45,7 +45,8 @@ const portraitImg = document.getElementById('char-portrait');
 const logEl = document.getElementById('log');
 
 // Click Handler
-window.addEventListener('click', () => {
+const gameContainer = document.getElementById('game-container');
+gameContainer.addEventListener('click', (event) => {
     if (!player.isLocked) {
         player.controls.lock();
     } else {
@@ -268,18 +269,29 @@ window.addEventListener('resize', () => {
 
 // Inventory Click Handlers
 document.querySelectorAll('.backpack-slot').forEach((slot, index) => {
-    slot.addEventListener('click', () => {
+    slot.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent triggering an attack click
         const item = player.inventory[index];
         if (item) {
-            player.equip(item, index);
-            addLog(`Equipped ${item.name}`);
+            if (item.type === 'consumable') {
+                const result = player.useItem(item, index, monsters);
+                if (result.success) {
+                    addLog(result.message);
+                } else if (result.message) {
+                    addLog(result.message);
+                }
+            } else {
+                player.equip(item, index);
+                addLog(`Equipped ${item.name}`);
+            }
         }
     });
 });
 
 // Equipment Click Handlers
 document.querySelectorAll('#equipment .slot').forEach(slot => {
-    slot.addEventListener('click', () => {
+    slot.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent triggering an attack click
         const slotId = slot.id.replace('slot-', '');
         const item = player.equipment[slotId];
         if (item) {

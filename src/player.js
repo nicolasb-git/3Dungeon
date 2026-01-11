@@ -129,6 +129,29 @@ export class Player {
         return { actualDamage, baseDamage: amount, def: totalDef, isDead: this.hp <= 0 };
     }
 
+    heal(amount) {
+        const previousHP = this.hp;
+        this.hp = Math.min(this.maxHp, this.hp + amount);
+        const actualHeal = this.hp - previousHP;
+        this.updateUI();
+        return actualHeal;
+    }
+
+    useItem(item, index, monsters) {
+        if (item.type === 'consumable') {
+            if (item.healAmount) {
+                if (this.hp >= this.maxHp) {
+                    return { success: false, message: "Your health is already full!" };
+                }
+                this.heal(item.healAmount);
+                this.inventory.splice(index, 1);
+                this.updateUI();
+                return { success: true, message: `Used ${item.name} and healed for ${item.healAmount} HP` };
+            }
+        }
+        return { success: false };
+    }
+
     getTotalDefense() {
         let bonus = 0;
         for (const slot in this.equipment) {
@@ -184,8 +207,8 @@ export class Player {
     }
 
     attack(monsters = []) {
-        if (this.attackCooldown > 0) return null;
-        this.attackCooldown = this.weapon.cooldown;
+        if (this.attackCooldown > 0) return [];
+        this.attackCooldown = Math.max(0.1, this.weapon.cooldown); // Minimum 0.1s to prevent frame-perfect double hits
         this.slashTimer = 0.2; // Keep visual animation fast
         this.slashSprite.visible = true;
         this.slashSprite.material.rotation = Math.random() * Math.PI * 2;
@@ -218,6 +241,7 @@ export class Player {
 
     updateUI() {
         const hpEl = document.getElementById('hp-val');
+        const hpMaxEl = document.getElementById('hp-max');
         const strEl = document.getElementById('str-val');
         const defEl = document.getElementById('def-val');
         const goldEl = document.getElementById('gold-val');
@@ -225,6 +249,7 @@ export class Player {
         const lvlEl = document.getElementById('lvl-val');
 
         if (hpEl) hpEl.textContent = this.hp;
+        if (hpMaxEl) hpMaxEl.textContent = this.maxHp;
         if (strEl) strEl.textContent = this.str;
         if (defEl) defEl.textContent = this.getTotalDefense();
         if (goldEl) goldEl.textContent = this.gold;
@@ -455,6 +480,7 @@ export class Player {
         // Update Cooldown
         if (this.attackCooldown > 0) {
             this.attackCooldown -= delta;
+            if (this.attackCooldown < 0) this.attackCooldown = 0;
         }
 
         // Update Slash

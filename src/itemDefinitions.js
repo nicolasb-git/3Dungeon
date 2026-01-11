@@ -21,6 +21,13 @@ export const ITEMS = {
         itemClass: 'Armor',
         itemType: 'torso',
         defense: 12,
-        icon: '/plate_icon.png'
+        icon: '/tunic_icon.png'
+    },
+    healing_potion: {
+        id: 'healing_potion',
+        name: 'Healing Potion',
+        itemClass: 'Potion',
+        healAmount: 30,
+        icon: '/potion_icon.png'
     }
 };

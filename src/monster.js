@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { LOOT_CONFIG } from './lootConfig.js';
-import { Armor } from './item.js';
+import { Armor, Potion } from './item.js';
 import { MONSTERS } from './monsterDefinitions.js';
 
 export class Monster {
@@ -22,7 +22,7 @@ export class Monster {
         this.def = config.def;
         this.attackDamage = { ...config.attackDamage };
         this.maxAttackCooldown = config.maxAttackCooldown;
-        this.speed = config.speed;
+        this.walkingSpeed = config.walkingSpeed;
         this.texturePaths = config.texturePaths;
 
         this._loadTextures();
@@ -167,7 +167,7 @@ export class Monster {
         if (dir.length() < 0.6) return; // Keep a small distance to avoid overlapping player
 
         dir.normalize();
-        const movement = dir.multiplyScalar(this.speed * delta);
+        const movement = dir.multiplyScalar(this.walkingSpeed * delta);
         const nextPos = this.sprite.position.clone().add(movement);
 
         // Movement Collision check
@@ -217,6 +217,8 @@ export class Monster {
                     let item = null;
                     if (data.itemClass === 'Armor') {
                         item = new Armor(data.name, data.itemType, data.defense, data.icon);
+                    } else if (data.itemClass === 'Potion') {
+                        item = new Potion(data.name, data.healAmount, data.icon);
                     }
                     if (item) results.push({ type: 'item', item });
                 }

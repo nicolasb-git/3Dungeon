@@ -12,6 +12,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.1,
             item: ITEMS.leather_tunic
+        },
+        {
+            type: 'item',
+            chance: 0.15,
+            item: ITEMS.healing_potion
         }
     ],
     skeleton: [
@@ -30,6 +35,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.2,
             item: ITEMS.rusty_chainmail
+        },
+        {
+            type: 'item',
+            chance: 0.25,
+            item: ITEMS.healing_potion
         }
     ]
 };
