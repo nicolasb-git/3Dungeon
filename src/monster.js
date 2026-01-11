@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { LOOT_CONFIG } from './lootConfig.js';
+import { Armor } from './item.js';
+import { MONSTERS } from './monsterDefinitions.js';
 
 export class Monster {
     constructor(scene, position, type = 'shadow') {
@@ -11,25 +14,16 @@ export class Monster {
         this.animationTimer = 0;
         this.textures = { idle: null, attack: null };
 
-        if (type === 'skeleton') {
-            this.name = "Rattled Skeleton";
-            this.hp = 20;
-            this.maxHp = 20;
-            this.def = 4;
-            this.attackDamage = { min: 5, max: 8 };
-            this.maxAttackCooldown = 1.0;
-            this.speed = 0.8;
-            this.texturePaths = { idle: '/skeleton.png', attack: '/skeleton_attack.png' };
-        } else {
-            this.name = "Lesser Shadow";
-            this.hp = 40;
-            this.maxHp = 40;
-            this.def = 0;
-            this.attackDamage = { min: 4, max: 6 };
-            this.maxAttackCooldown = 0.6;
-            this.speed = 1.0;
-            this.texturePaths = { idle: '/monster.png', attack: '/monster_attack.png' };
-        }
+        const config = MONSTERS[type] || MONSTERS.shadow;
+
+        this.name = config.name;
+        this.hp = config.hp;
+        this.maxHp = config.hp;
+        this.def = config.def;
+        this.attackDamage = { ...config.attackDamage };
+        this.maxAttackCooldown = config.maxAttackCooldown;
+        this.speed = config.speed;
+        this.texturePaths = config.texturePaths;
 
         this._loadTextures();
     }
@@ -208,6 +202,27 @@ export class Monster {
         }
 
         this.updateBox();
+    }
+
+    getLoot() {
+        const table = LOOT_CONFIG[this.type] || [];
+        const results = [];
+        for (const drop of table) {
+            if (Math.random() < drop.chance) {
+                if (drop.type === 'gold') {
+                    const amount = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
+                    results.push({ type: 'gold', amount });
+                } else if (drop.type === 'item') {
+                    const data = drop.item;
+                    let item = null;
+                    if (data.itemClass === 'Armor') {
+                        item = new Armor(data.name, data.itemType, data.defense, data.icon);
+                    }
+                    if (item) results.push({ type: 'item', item });
+                }
+            }
+        }
+        return results;
     }
 
     remove() {

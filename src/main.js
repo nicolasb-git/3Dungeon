@@ -4,7 +4,10 @@ import { Player } from './player.js';
 import { Monster } from './monster.js';
 import { Loot } from './loot.js';
 import { Warrior } from './classes.js';
-import { Armor } from './item.js';
+import { Armor, Item } from './item.js';
+import { ITEMS } from './itemDefinitions.js';
+import { MONSTERS } from './monsterDefinitions.js';
+import { LOOT_CONFIG } from './lootConfig.js';
 import './style.css';
 
 // Dynamic Map Import
@@ -120,6 +123,59 @@ function triggerBloodFlash() {
 const warrior = new Warrior();
 const player = new Player(camera, document.getElementById('game-container'), warrior);
 player.updateUI();
+
+async function checkAssetExists(path) {
+    try {
+        const response = await fetch(path, { method: 'HEAD' });
+        return response.ok;
+    } catch (e) {
+        return false;
+    }
+}
+
+async function validateAssets() {
+    console.log("Starting asset and logic validation...");
+
+    // 1. Loot Logic Validation
+    const monsterKeys = Object.keys(MONSTERS);
+    const missingLoot = monsterKeys.filter(mId => !LOOT_CONFIG[mId]);
+    if (missingLoot.length > 0) {
+        console.error("CRITICAL: Missing loot definitions for:", missingLoot.join(", "));
+        addLog(`WARNING: Loot table missing for: ${missingLoot.join(", ")}`);
+    }
+
+    // 2. Asset Path Validation
+    const assetChecks = [];
+
+    // Check Monsters
+    monsterKeys.forEach(mId => {
+        const m = MONSTERS[mId];
+        assetChecks.push({ id: `Monster:${mId}:idle`, path: m.texturePaths.idle });
+        assetChecks.push({ id: `Monster:${mId}:attack`, path: m.texturePaths.attack });
+    });
+
+    // Check Items
+    Object.keys(ITEMS).forEach(itemId => {
+        const item = ITEMS[itemId];
+        assetChecks.push({ id: `Item:${itemId}`, path: item.icon });
+    });
+
+    const results = await Promise.all(assetChecks.map(async check => ({
+        ...check,
+        exists: await checkAssetExists(check.path)
+    })));
+
+    const brokenAssets = results.filter(r => !r.exists);
+    if (brokenAssets.length > 0) {
+        const msg = brokenAssets.map(r => `${r.id} (${r.path})`).join(", ");
+        console.error("CRITICAL: Broken asset paths detected:", msg);
+        addLog(`WARNING: Some textures are missing: ${brokenAssets.length} broken paths.`);
+    } else {
+        console.log("All assets and loot definitions validated successfully.");
+    }
+}
+
+validateAssets();
 
 function loadLevel(levelIndex) {
     // Find map file
@@ -298,15 +354,15 @@ function animate() {
         if (monsters[i].hp <= 0) {
             const pos = monsters[i].sprite.position.clone();
 
-            // Random Drop: 30% chance of armor, else gold
-            if (Math.random() < 0.3) {
-                const tunic = new Armor("Leather Tunic", "torso", 5, "/tunic_icon.png");
-                loots.push(new Loot(scene, pos, 0, tunic));
-                addLog(`The ${monsters[i].name} dropped a Leather Tunic!`);
-            } else {
-                const goldAmount = Math.floor(Math.random() * 11) + 10; // 10-20 gold
-                loots.push(new Loot(scene, pos, goldAmount));
-            }
+            const lootResults = monsters[i].getLoot();
+            lootResults.forEach(lootData => {
+                if (lootData.type === 'gold') {
+                    loots.push(new Loot(scene, pos, lootData.amount));
+                } else if (lootData.type === 'item') {
+                    loots.push(new Loot(scene, pos, 0, lootData.item));
+                    addLog(`The ${monsters[i].name} dropped a ${lootData.item.name}!`);
+                }
+            });
 
             if (player.addXP(25)) {
                 addLog("LEVEL UP! You feel more powerful!");
