@@ -1,20 +1,35 @@
 import * as THREE from 'three';
 
 export class Monster {
-    constructor(scene, position) {
+    constructor(scene, position, type = 'shadow') {
         this.scene = scene;
         this.initialPosition = position.clone();
-        this.name = "Lesser Shadow";
-        this.hp = 40;
-        this.attackDamage = { min: 2, max: 3 };
-        this.attackCooldown = 0;
-        this.maxAttackCooldown = 0.5;
-        this.speed = 1.0; // Movement speed
+        this.type = type;
         this.spottedPlayer = false;
-
-        this.textures = { idle: null, attack: null };
+        this.attackCooldown = 0;
         this.currentState = 'idle';
         this.animationTimer = 0;
+        this.textures = { idle: null, attack: null };
+
+        if (type === 'skeleton') {
+            this.name = "Rattled Skeleton";
+            this.hp = 20;
+            this.maxHp = 20;
+            this.def = 4;
+            this.attackDamage = { min: 5, max: 8 };
+            this.maxAttackCooldown = 1.0;
+            this.speed = 0.8;
+            this.texturePaths = { idle: '/skeleton.png', attack: '/skeleton_attack.png' };
+        } else {
+            this.name = "Lesser Shadow";
+            this.hp = 40;
+            this.maxHp = 40;
+            this.def = 0;
+            this.attackDamage = { min: 4, max: 6 };
+            this.maxAttackCooldown = 0.6;
+            this.speed = 1.0;
+            this.texturePaths = { idle: '/monster.png', attack: '/monster_attack.png' };
+        }
 
         this._loadTextures();
     }
@@ -23,9 +38,9 @@ export class Monster {
         const loader = new THREE.TextureLoader();
 
         // Load Idle
-        this._processTexture(loader, '/monster.png', 'idle');
+        this._processTexture(loader, this.texturePaths.idle, 'idle');
         // Load Attack
-        this._processTexture(loader, '/monster_attack.png', 'attack');
+        this._processTexture(loader, this.texturePaths.attack, 'attack');
     }
 
     _processTexture(loader, path, key) {
@@ -87,7 +102,8 @@ export class Monster {
     }
 
     takeDamage(amount) {
-        this.hp -= amount;
+        const actualDamage = Math.max(1, amount - this.def); // Skeletons have defense
+        this.hp -= actualDamage;
         return this.hp <= 0;
     }
 

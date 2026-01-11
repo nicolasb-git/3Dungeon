@@ -1,15 +1,18 @@
 import * as THREE from 'three';
 
 export class Loot {
-    constructor(scene, position, amount = 1) {
+    constructor(scene, position, amount = 0, item = null) {
         this.scene = scene;
         this.position = position.clone();
         this.amount = amount;
+        this.item = item;
         this.collected = false;
         this.removed = false;
 
+        const texturePath = this.item ? this.item.iconUrl : '/gold_coins.png';
+
         const loader = new THREE.TextureLoader();
-        loader.load('/gold_coins.png', (texture) => {
+        loader.load(texturePath, (texture) => {
             const canvas = document.createElement('canvas');
             const img = texture.image;
             canvas.width = img.width;
@@ -25,6 +28,8 @@ export class Loot {
                 const r = data[i];
                 const g = data[i + 1];
                 const b = data[i + 2];
+                // Slightly different thresholds for items vs gold if needed, 
+                // but let's stick to simple green chroma key.
                 if (g > 150 && g > r && g > b) {
                     data[i + 3] = 0;
                 }
@@ -34,15 +39,15 @@ export class Loot {
             const newTexture = new THREE.CanvasTexture(canvas);
             newTexture.colorSpace = THREE.SRGBColorSpace;
 
-            if (this.removed) return; // Don't add if already picked up
+            if (this.removed) return;
 
             const material = new THREE.SpriteMaterial({ map: newTexture, transparent: true });
             this.sprite = new THREE.Sprite(material);
             this.sprite.scale.set(0.4, 0.4, 1);
             this.sprite.position.copy(this.position);
-            this.sprite.position.y = 0.2; // Floor level
+            this.sprite.position.y = 0.2;
             this.scene.add(this.sprite);
-            this.updateBox(); // Ensure box is synced to sprite if needed
+            this.updateBox();
         });
 
         this.box = new THREE.Box3();

@@ -4,6 +4,7 @@ import { Player } from './player.js';
 import { Monster } from './monster.js';
 import { Loot } from './loot.js';
 import { Warrior } from './classes.js';
+import { Armor } from './item.js';
 import './style.css';
 
 // Dynamic Map Import
@@ -45,8 +46,8 @@ window.addEventListener('click', () => {
     if (!player.isLocked) {
         player.controls.lock();
     } else {
-        const hitResult = player.attack(monsters);
-        if (hitResult) {
+        const hits = player.attack(monsters);
+        hits.forEach(hitResult => {
             addLog(`You hit the ${hitResult.monster.name} for ${hitResult.damage} damage (${hitResult.baseDamage} + ${hitResult.str} STR)!`);
             if (hitResult.monster.sprite) {
                 showDamageNumber(hitResult.monster.sprite.position, hitResult.damage);
@@ -54,7 +55,7 @@ window.addEventListener('click', () => {
             if (hitResult.isDead) {
                 addLog(`The ${hitResult.monster.name} collapses into dust.`);
             }
-        }
+        });
     }
 });
 
@@ -127,8 +128,8 @@ function loadLevel(levelIndex) {
 
     if (!mapContent) {
         console.log("No more levels or map not found: " + mapPath);
-        addLog("You have reached the end of the dungeon!");
-        alert("You have reached the end of the dungeon!");
+        document.getElementById('victory').style.display = 'flex';
+        player.controls.unlock();
         return;
     }
 
@@ -150,22 +151,40 @@ function loadLevel(levelIndex) {
     const startPos = dungeon.getStartPosition();
     camera.position.copy(startPos);
 
-    // Spawn Monster in Level 1
-    if (levelIndex === 1) {
-        const emptySpaces = dungeon.getEmptySpaces();
-        // Filter spaces at least 2 units away from start X
-        const validSpaces = emptySpaces.filter(s => {
-            const dist = Math.sqrt(Math.pow(s.x - startPos.x, 2) + Math.pow(s.z - startPos.z, 2));
-            return dist >= 2;
-        });
+    // Spawn Monsters
+    const numMonsters = 1 + levelIndex;
+    const emptySpaces = dungeon.getEmptySpaces();
+    const validSpaces = emptySpaces.filter(s => {
+        const dist = Math.sqrt(Math.pow(s.x - startPos.x, 2) + Math.pow(s.z - startPos.z, 2));
+        return dist >= 3;
+    });
 
-        if (validSpaces.length > 0) {
-            const spawnSpot = validSpaces[Math.floor(Math.random() * validSpaces.length)];
-            const monsterPos = new THREE.Vector3(spawnSpot.x, 0, spawnSpot.z);
-            const monster = new Monster(scene, monsterPos);
-            monsters.push(monster);
-            addLog("A shadow moves in the distance...");
+    for (let i = 0; i < numMonsters && validSpaces.length > 0; i++) {
+        const rndIdx = Math.floor(Math.random() * validSpaces.length);
+        const spot = validSpaces.splice(rndIdx, 1)[0];
+        const monsterPos = new THREE.Vector3(spot.x, 0, spot.z);
+
+        // Decide type
+        let type = 'shadow';
+        if (levelIndex > 1) {
+            // Level 2: 50/50, Level 3+: more skeletons
+            const skeletonChance = levelIndex === 2 ? 0.5 : 0.7;
+            if (Math.random() < skeletonChance) {
+                type = 'skeleton';
+            }
         }
+
+        const monster = new Monster(scene, monsterPos, type);
+        // Buff monsters based on level
+        monster.maxHp += (levelIndex - 1) * 20;
+        monster.hp = monster.maxHp;
+        monster.attackDamage.min += (levelIndex - 1) * 2;
+        monster.attackDamage.max += (levelIndex - 1) * 3;
+        monsters.push(monster);
+    }
+
+    if (monsters.length > 0) {
+        addLog(`${monsters.length} shadows move in the distance...`);
     }
 
     console.log(`Level ${levelIndex} loaded.`);
@@ -191,6 +210,29 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
 });
 
+// Inventory Click Handlers
+document.querySelectorAll('.backpack-slot').forEach((slot, index) => {
+    slot.addEventListener('click', () => {
+        const item = player.inventory[index];
+        if (item) {
+            player.equip(item, index);
+            addLog(`Equipped ${item.name}`);
+        }
+    });
+});
+
+// Equipment Click Handlers
+document.querySelectorAll('#equipment .slot').forEach(slot => {
+    slot.addEventListener('click', () => {
+        const slotId = slot.id.replace('slot-', '');
+        const item = player.equipment[slotId];
+        if (item) {
+            player.unequip(slotId);
+            addLog(`Unequipped ${item.name}`);
+        }
+    });
+});
+
 // Loop
 const clock = new THREE.Clock();
 
@@ -198,6 +240,12 @@ function animate() {
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
+
+    if (player.hp <= 0) {
+        document.getElementById('game-over').style.display = 'flex';
+        player.controls.unlock();
+        return;
+    }
 
     // Update monsters
     monsters.forEach(m => {
@@ -249,10 +297,20 @@ function animate() {
     for (let i = monsters.length - 1; i >= 0; i--) {
         if (monsters[i].hp <= 0) {
             const pos = monsters[i].sprite.position.clone();
-            const goldAmount = Math.floor(Math.random() * 11) + 10; // 10-20 gold
-            loots.push(new Loot(scene, pos, goldAmount));
-            player.addXP(20);
-            addLog(`You gained 20 experience!`);
+
+            // Random Drop: 30% chance of armor, else gold
+            if (Math.random() < 0.3) {
+                const tunic = new Armor("Leather Tunic", "torso", 5, "/tunic_icon.png");
+                loots.push(new Loot(scene, pos, 0, tunic));
+                addLog(`The ${monsters[i].name} dropped a Leather Tunic!`);
+            } else {
+                const goldAmount = Math.floor(Math.random() * 11) + 10; // 10-20 gold
+                loots.push(new Loot(scene, pos, goldAmount));
+            }
+
+            if (player.addXP(25)) {
+                addLog("LEVEL UP! You feel more powerful!");
+            }
             monsters[i].remove();
             monsters.splice(i, 1);
         }
@@ -266,11 +324,19 @@ function animate() {
 
     for (let i = loots.length - 1; i >= 0; i--) {
         if (playerBox.intersectsBox(loots[i].getBoundingBox())) {
-            const amount = loots[i].amount;
-            player.addGold(amount);
-            addLog(`You picked up ${amount} gold coins!`);
-            loots[i].remove();
-            loots.splice(i, 1);
+            if (loots[i].item) {
+                if (player.addItem(loots[i].item)) {
+                    addLog(`You picked up: ${loots[i].item.name}`);
+                    loots[i].remove();
+                    loots.splice(i, 1);
+                }
+            } else {
+                const amount = loots[i].amount;
+                player.addGold(amount);
+                addLog(`You picked up ${amount} gold coins!`);
+                loots[i].remove();
+                loots.splice(i, 1);
+            }
         }
     }
 

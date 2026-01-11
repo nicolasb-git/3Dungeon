@@ -16,6 +16,15 @@
     </div>
     <div id="blood-flash"></div>
     <div id="damage-numbers"></div>
+    <div id="game-over" class="overlay">
+      <h1>GAME OVER</h1>
+      <button onclick="location.reload()">Restart</button>
+    </div>
+    <div id="victory" class="overlay">
+      <h1>VICTORY</h1>
+      <p>You have escaped the labyrinth!</p>
+      <button onclick="location.reload()">Play Again</button>
+    </div>
   </div>
   <div id="hud">
     <div id="portrait">
@@ -23,6 +32,7 @@
     </div>
     <div id="attributes">
       <div class="stat">HP: <span id="hp-val">100</span></div>
+      <div class="stat">LVL: <span id="lvl-val">1</span></div>
       <div class="stat">STR: <span id="str-val">10</span></div>
       <div class="stat">DEF: <span id="def-val">5</span></div>
       <div class="stat">GOLD: <span id="gold-val">0</span></div>

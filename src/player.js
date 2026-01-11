@@ -22,6 +22,20 @@ export class Player {
         this.gold = 0;
         this.xp = 0;
         this.weapon = characterClass.weapon;
+        this.level = 1;
+        this.xpToNextLevel = 100;
+
+        // Inventory & Equipment
+        this.inventory = [];
+        this.maxInventory = 10;
+        this.equipment = {
+            head: null,
+            torso: null,
+            legs: null,
+            boots: null,
+            'l-hand': null,
+            'r-hand': characterClass.weapon // Warrior starts with weapon in right hand
+        };
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
@@ -41,6 +55,7 @@ export class Player {
 
         this.slashTimer = 0;
         this.attackCooldown = 0;
+        this.maxAttackCooldown = characterClass.weapon.cooldown;
         this.audioCtx = null;
 
         this._initListeners(domElement);
@@ -107,10 +122,65 @@ export class Player {
     }
 
     takeDamage(amount) {
-        const actualDamage = Math.max(0, amount - this.def);
+        const totalDef = this.getTotalDefense();
+        const actualDamage = amount > 0 ? Math.max(1, amount - totalDef) : 0;
         this.hp = Math.max(0, this.hp - actualDamage);
         this.updateUI();
-        return { actualDamage, baseDamage: amount, def: this.def, isDead: this.hp <= 0 };
+        return { actualDamage, baseDamage: amount, def: totalDef, isDead: this.hp <= 0 };
+    }
+
+    getTotalDefense() {
+        let bonus = 0;
+        for (const slot in this.equipment) {
+            const item = this.equipment[slot];
+            if (item && item.defense) {
+                bonus += item.defense;
+            }
+        }
+        return this.def + bonus;
+    }
+
+    addItem(item) {
+        if (this.inventory.length < this.maxInventory) {
+            this.inventory.push(item);
+            this.updateUI();
+            this._playPickupSound();
+            return true;
+        }
+        return false;
+    }
+
+    equip(item, inventoryIndex) {
+        const slot = item.type === 'weapon' ? 'r-hand' : item.type;
+        const oldItem = this.equipment[slot];
+
+        // Unequip old item if exists
+        if (oldItem) {
+            this.inventory[inventoryIndex] = oldItem;
+        } else {
+            this.inventory.splice(inventoryIndex, 1);
+        }
+
+        this.equipment[slot] = item;
+        if (item.type === 'weapon') {
+            this.weapon = item;
+            this.maxAttackCooldown = item.cooldown;
+        }
+
+        this.updateUI();
+    }
+
+    unequip(slot) {
+        const item = this.equipment[slot];
+        if (item && this.inventory.length < this.maxInventory) {
+            this.equipment[slot] = null;
+            if (slot === 'r-hand') {
+                this.weapon = this.charClass.weapon; // Revert to fists/basic if possible, but here we just use what class has.
+                this.maxAttackCooldown = this.weapon.cooldown;
+            }
+            this.inventory.push(item);
+            this.updateUI();
+        }
     }
 
     attack(monsters = []) {
@@ -123,30 +193,27 @@ export class Player {
         this._playSlashSound();
 
         // Hit Detection
-        let hitInfo = null;
+        let hits = [];
         const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
         const playerPos = this.camera.position;
 
         for (const monster of monsters) {
             if (!monster.sprite) continue;
 
-            // Check distance
             const dist = playerPos.distanceTo(monster.sprite.position);
-            if (dist < 1.0) {
-                // Check if monster is in front of player
+            if (dist < 1.2) { // Slightly increased range for better feel
                 const mDir = monster.sprite.position.clone().sub(playerPos).normalize();
                 const dot = forward.dot(mDir);
 
-                if (dot > 0.5) { // Roughly 60 degrees cone
+                if (dot > 0.45) { // Slightly wider cone
                     const baseDamage = this.weapon.getDamage();
                     const totalDamage = baseDamage + this.str;
                     const isDead = monster.takeDamage(totalDamage);
-                    hitInfo = { damage: totalDamage, baseDamage, str: this.str, isDead, monster };
-                    break; // Hit one monster per slash
+                    hits.push({ damage: totalDamage, baseDamage, str: this.str, isDead, monster });
                 }
             }
         }
-        return hitInfo;
+        return hits;
     }
 
     updateUI() {
@@ -155,22 +222,74 @@ export class Player {
         const defEl = document.getElementById('def-val');
         const goldEl = document.getElementById('gold-val');
         const xpEl = document.getElementById('xp-val');
+        const lvlEl = document.getElementById('lvl-val');
 
         if (hpEl) hpEl.textContent = this.hp;
         if (strEl) strEl.textContent = this.str;
-        if (defEl) defEl.textContent = this.def;
+        if (defEl) defEl.textContent = this.getTotalDefense();
         if (goldEl) goldEl.textContent = this.gold;
-        if (xpEl) xpEl.textContent = this.xp;
+        if (xpEl) xpEl.textContent = `${this.xp} / ${this.xpToNextLevel}`;
+        if (lvlEl) lvlEl.textContent = this.level;
+
+        // Update Equipment Slots
+        for (const slotName in this.equipment) {
+            const item = this.equipment[slotName];
+            const slotEl = document.getElementById(`slot-${slotName}`);
+            if (slotEl) {
+                if (item) {
+                    slotEl.style.backgroundImage = `url('${item.iconUrl}')`;
+                    slotEl.classList.add('equipped');
+                } else {
+                    slotEl.style.backgroundImage = 'none';
+                    slotEl.classList.remove('equipped');
+                }
+            }
+        }
+
+        // Update Inventory Grid
+        const backpackSlots = document.querySelectorAll('.backpack-slot');
+        backpackSlots.forEach((slotEl, index) => {
+            const item = this.inventory[index];
+            if (item) {
+                slotEl.style.backgroundImage = `url('${item.iconUrl}')`;
+                slotEl.classList.add('has-item');
+                slotEl.title = item.name;
+            } else {
+                slotEl.style.backgroundImage = 'none';
+                slotEl.classList.remove('has-item');
+                slotEl.title = `Backpack Slot ${index + 1}`;
+            }
+        });
     }
 
     addGold(amount) {
         this.gold += amount;
         this.updateUI();
+        this._playPickupSound();
     }
 
     addXP(amount) {
         this.xp += amount;
+        let leveledUp = false;
+        while (this.xp >= this.xpToNextLevel) {
+            this.levelUp();
+            leveledUp = true;
+        }
         this.updateUI();
+        return leveledUp;
+    }
+
+    levelUp() {
+        this.level++;
+        this.xp -= this.xpToNextLevel;
+        this.xpToNextLevel = Math.floor(this.xpToNextLevel * 1.5);
+
+        // Stat boosts
+        this.maxHp += 20;
+        this.hp = this.maxHp;
+        this.str += 2;
+        this.def += 1;
+        this._playLevelUpSound();
     }
 
     _playSlashSound() {
@@ -272,6 +391,64 @@ export class Player {
 
         noiseNode.start();
         noiseNode.stop(this.audioCtx.currentTime + 0.15);
+    }
+
+    _playPickupSound() {
+        if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+
+        const oscillator = this.audioCtx.createOscillator();
+        const gainNode = this.audioCtx.createGain();
+
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(440, this.audioCtx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(880, this.audioCtx.currentTime + 0.1);
+
+        gainNode.gain.setValueAtTime(0, this.audioCtx.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.2, this.audioCtx.currentTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.15);
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioCtx.destination);
+
+        oscillator.start();
+        oscillator.stop(this.audioCtx.currentTime + 0.15);
+    }
+
+    _playLevelUpSound() {
+        if (!this.audioCtx) {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+
+        const now = this.audioCtx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+
+        notes.forEach((freq, i) => {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+
+            gain.gain.setValueAtTime(0, now + i * 0.1);
+            gain.gain.linearRampToValueAtTime(0.1, now + i * 0.1 + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.3);
+
+            osc.connect(gain);
+            gain.connect(this.audioCtx.destination);
+
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.3);
+        });
     }
 
     update(delta, monsters = []) {
