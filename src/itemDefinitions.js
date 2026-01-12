@@ -29,5 +29,14 @@ export const ITEMS = {
         itemClass: 'Potion',
         healAmount: 30,
         icon: '/potion_icon.png'
+    },
+    basic_sword: {
+        id: 'basic_sword',
+        name: 'Basic Sword',
+        itemClass: 'Weapon',
+        minDamage: 2,
+        maxDamage: 4,
+        cooldown: 0.5,
+        icon: '/sword_icon.png'
     }
 };

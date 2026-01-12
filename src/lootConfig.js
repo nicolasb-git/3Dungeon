@@ -40,6 +40,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.25,
             item: ITEMS.healing_potion
+        },
+        {
+            type: 'item',
+            chance: 0.10,
+            item: ITEMS.basic_sword
         }
     ]
 };
