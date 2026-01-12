@@ -222,14 +222,25 @@ function loadLevel(levelIndex) {
         const spot = validSpaces.splice(rndIdx, 1)[0];
         const monsterPos = new THREE.Vector3(spot.x, 0, spot.z);
 
-        // Decide type
-        let type = 'shadow';
-        if (levelIndex > 1) {
-            // Level 2: 50/50, Level 3+: more skeletons
-            const skeletonChance = levelIndex === 2 ? 0.5 : 0.7;
-            if (Math.random() < skeletonChance) {
-                type = 'skeleton';
+        // Decide type (Weighted Random)
+        const available = Object.entries(MONSTERS)
+            .filter(([_, config]) => levelIndex >= (config.startLevel || 1))
+            .map(([id, config]) => ({ id, weight: config.spawnWeight || 1 }));
+
+        const totalWeight = available.reduce((sum, item) => sum + item.weight, 0);
+        let random = Math.random() * totalWeight;
+        let type = available[0].id;
+
+        for (const item of available) {
+            if (random < item.weight) {
+                type = item.id;
+                break;
             }
+            random -= item.weight;
+        }
+
+        if (type === 'knight_skeleton') {
+            addLog(`A powerful presence emerges... a Skeletal Knight!`);
         }
 
         const monster = new Monster(scene, monsterPos, type);

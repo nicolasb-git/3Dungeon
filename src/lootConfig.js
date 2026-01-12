@@ -51,5 +51,28 @@ export const LOOT_CONFIG = {
             chance: 0.05,
             item: ITEMS.superior_sword
         }
+    ],
+    knight_skeleton: [
+        {
+            type: 'gold',
+            chance: 0.8,
+            min: 40,
+            max: 80
+        },
+        {
+            type: 'item',
+            chance: 0.2,
+            item: ITEMS.iron_plate
+        },
+        {
+            type: 'item',
+            chance: 0.3,
+            item: ITEMS.healing_potion
+        },
+        {
+            type: 'item',
+            chance: 0.15,
+            item: ITEMS.superior_sword
+        }
     ]
 };
