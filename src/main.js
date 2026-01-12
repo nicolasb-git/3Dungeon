@@ -123,6 +123,7 @@ function triggerBloodFlash() {
 // Player (Initialize once)
 const warrior = new Warrior();
 const player = new Player(camera, document.getElementById('game-container'), warrior);
+document.getElementById('floor-val').textContent = currentLevel;
 player.updateUI();
 
 async function checkAssetExists(path) {
@@ -245,6 +246,7 @@ function loadLevel(levelIndex) {
     }
 
     console.log(`Level ${levelIndex} loaded.`);
+    document.getElementById('floor-val').textContent = levelIndex;
     addLog(`Entering Level ${levelIndex}...`);
 }
 

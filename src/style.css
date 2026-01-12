@@ -16,6 +16,23 @@ html {
   position: relative;
 }
 
+#floor-indicator {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #f39c12;
+  font-size: 20px;
+  font-weight: 900;
+  text-shadow: 2px 2px 2px #000;
+  z-index: 20;
+  font-family: 'Courier New', Courier, monospace;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(243, 156, 18, 0.3);
+  pointer-events: none;
+}
+
 #instructions {
   position: absolute;
   top: 50%;
