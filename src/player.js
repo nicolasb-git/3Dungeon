@@ -57,6 +57,7 @@ export class Player {
         this.attackCooldown = 0;
         this.maxAttackCooldown = characterClass.weapon.cooldown;
         this.audioCtx = null;
+        this.soundEnabled = true;
 
         this._initListeners(domElement);
     }
@@ -318,6 +319,7 @@ export class Player {
     }
 
     _playSlashSound() {
+        if (!this.soundEnabled) return;
         if (!this.audioCtx) {
             this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -378,6 +380,7 @@ export class Player {
     }
 
     _playScratchSound() {
+        if (!this.soundEnabled) return;
         if (!this.audioCtx) {
             this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -419,6 +422,7 @@ export class Player {
     }
 
     _playPickupSound() {
+        if (!this.soundEnabled) return;
         if (!this.audioCtx) {
             this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -446,6 +450,7 @@ export class Player {
     }
 
     _playLevelUpSound() {
+        if (!this.soundEnabled) return;
         if (!this.audioCtx) {
             this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }

@@ -38,5 +38,14 @@ export const ITEMS = {
         maxDamage: 4,
         cooldown: 0.5,
         icon: '/sword_icon.png'
+    },
+    superior_sword: {
+        id: 'superior_sword',
+        name: 'Superior Sword',
+        itemClass: 'Weapon',
+        minDamage: 6,
+        maxDamage: 10,
+        cooldown: 0.4,
+        icon: '/superior_sword_icon.png'
     }
 };

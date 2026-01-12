@@ -45,6 +45,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.10,
             item: ITEMS.basic_sword
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.superior_sword
         }
     ]
 };

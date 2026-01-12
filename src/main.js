@@ -269,6 +269,18 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight * 0.8);
 });
 
+// Sound Toggle
+const soundBtn = document.getElementById('sound-toggle');
+if (soundBtn) {
+    soundBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        player.soundEnabled = !player.soundEnabled;
+        soundBtn.textContent = player.soundEnabled ? '🔊' : '🔇';
+        soundBtn.classList.toggle('muted', !player.soundEnabled);
+        addLog(`Sound ${player.soundEnabled ? 'Enabled' : 'Disabled'}`);
+    });
+}
+
 // Inventory Click Handlers
 document.querySelectorAll('.backpack-slot').forEach((slot, index) => {
     slot.addEventListener('click', (event) => {
@@ -314,108 +326,111 @@ function animate() {
     if (player.hp <= 0) {
         document.getElementById('game-over').style.display = 'flex';
         player.controls.unlock();
+        renderer.render(scene, camera);
         return;
     }
 
-    // Update monsters
-    monsters.forEach(m => {
-        m.update(delta);
+    if (player.isLocked) {
+        // Update monsters
+        monsters.forEach(m => {
+            m.update(delta);
 
-        // Attack/Chase Player logic
-        const playerPos = camera.position;
-        const monsterPos = m.sprite ? m.sprite.position : null;
+            // Attack/Chase Player logic
+            const playerPos = camera.position;
+            const monsterPos = m.sprite ? m.sprite.position : null;
 
-        if (monsterPos) {
-            const dist = playerPos.distanceTo(monsterPos);
+            if (monsterPos) {
+                const dist = playerPos.distanceTo(monsterPos);
 
-            // Initial spot check
-            if (!m.spottedPlayer && m.hasLineOfSight(playerPos, dungeon.getWalls()) && dist < 10) {
-                m.spottedPlayer = true;
-                addLog(`The ${m.name} has spotted you!`);
+                // Initial spot check
+                if (!m.spottedPlayer && m.hasLineOfSight(playerPos, dungeon.getWalls()) && dist < 10) {
+                    m.spottedPlayer = true;
+                    addLog(`The ${m.name} has spotted you!`);
+                }
+
+                if (m.spottedPlayer) {
+                    if (dist < 1.0) {
+                        // Attack range
+                        if (m.attackCooldown <= 0) {
+                            const baseDamage = m.getAttackDamage();
+                            const result = player.takeDamage(baseDamage);
+                            player._playScratchSound();
+                            triggerBloodFlash();
+                            showDamageNumber(null, result.actualDamage, 'player');
+                            m.playAttackAnimation();
+                            addLog(`The ${m.name} hits you for ${result.actualDamage} damage (${result.baseDamage} - ${result.def} DEF)!`);
+                            m.attackCooldown = m.maxAttackCooldown;
+                        }
+                    } else {
+                        // Move towards player (persistent even if LOS is lost)
+                        m.moveTowards(playerPos, delta, dungeon.getWalls());
+                    }
+                }
             }
+        });
 
-            if (m.spottedPlayer) {
-                if (dist < 1.0) {
-                    // Attack range
-                    if (m.attackCooldown <= 0) {
-                        const baseDamage = m.getAttackDamage();
-                        const result = player.takeDamage(baseDamage);
-                        player._playScratchSound();
-                        triggerBloodFlash();
-                        showDamageNumber(null, result.actualDamage, 'player');
-                        m.playAttackAnimation();
-                        addLog(`The ${m.name} hits you for ${result.actualDamage} damage (${result.baseDamage} - ${result.def} DEF)!`);
-                        m.attackCooldown = m.maxAttackCooldown;
+        player.update(delta, monsters);
+
+        // Update Cooldown UI
+        if (cooldownOverlay) {
+            const percent = (player.attackCooldown / player.maxAttackCooldown) * 100;
+            cooldownOverlay.style.height = `${percent}%`;
+        }
+
+        // Cleanup dead monsters and drop loot
+        for (let i = monsters.length - 1; i >= 0; i--) {
+            if (monsters[i].hp <= 0) {
+                const pos = monsters[i].sprite.position.clone();
+
+                const lootResults = monsters[i].getLoot();
+                lootResults.forEach(lootData => {
+                    if (lootData.type === 'gold') {
+                        loots.push(new Loot(scene, pos, lootData.amount));
+                    } else if (lootData.type === 'item') {
+                        loots.push(new Loot(scene, pos, 0, lootData.item));
+                        addLog(`The ${monsters[i].name} dropped a ${lootData.item.name}!`);
+                    }
+                });
+
+                if (player.addXP(25)) {
+                    addLog("LEVEL UP! You feel more powerful!");
+                }
+                monsters[i].remove();
+                monsters.splice(i, 1);
+            }
+        }
+
+        // Update Loots / Pickups
+        const playerBox = new THREE.Box3().setFromCenterAndSize(
+            camera.position,
+            new THREE.Vector3(0.5, 1.8, 0.5)
+        );
+
+        for (let i = loots.length - 1; i >= 0; i--) {
+            if (playerBox.intersectsBox(loots[i].getBoundingBox())) {
+                if (loots[i].item) {
+                    if (player.addItem(loots[i].item)) {
+                        addLog(`You picked up: ${loots[i].item.name}`);
+                        loots[i].remove();
+                        loots.splice(i, 1);
                     }
                 } else {
-                    // Move towards player (persistent even if LOS is lost)
-                    m.moveTowards(playerPos, delta, dungeon.getWalls());
-                }
-            }
-        }
-    });
-
-    player.update(delta, monsters);
-
-    // Update Cooldown UI
-    if (cooldownOverlay) {
-        const percent = (player.attackCooldown / player.maxAttackCooldown) * 100;
-        cooldownOverlay.style.height = `${percent}%`;
-    }
-
-    // Cleanup dead monsters and drop loot
-    for (let i = monsters.length - 1; i >= 0; i--) {
-        if (monsters[i].hp <= 0) {
-            const pos = monsters[i].sprite.position.clone();
-
-            const lootResults = monsters[i].getLoot();
-            lootResults.forEach(lootData => {
-                if (lootData.type === 'gold') {
-                    loots.push(new Loot(scene, pos, lootData.amount));
-                } else if (lootData.type === 'item') {
-                    loots.push(new Loot(scene, pos, 0, lootData.item));
-                    addLog(`The ${monsters[i].name} dropped a ${lootData.item.name}!`);
-                }
-            });
-
-            if (player.addXP(25)) {
-                addLog("LEVEL UP! You feel more powerful!");
-            }
-            monsters[i].remove();
-            monsters.splice(i, 1);
-        }
-    }
-
-    // Update Loots / Pickups
-    const playerBox = new THREE.Box3().setFromCenterAndSize(
-        camera.position,
-        new THREE.Vector3(0.5, 1.8, 0.5)
-    );
-
-    for (let i = loots.length - 1; i >= 0; i--) {
-        if (playerBox.intersectsBox(loots[i].getBoundingBox())) {
-            if (loots[i].item) {
-                if (player.addItem(loots[i].item)) {
-                    addLog(`You picked up: ${loots[i].item.name}`);
+                    const amount = loots[i].amount;
+                    player.addGold(amount);
+                    addLog(`You picked up ${amount} gold coins!`);
                     loots[i].remove();
                     loots.splice(i, 1);
                 }
-            } else {
-                const amount = loots[i].amount;
-                player.addGold(amount);
-                addLog(`You picked up ${amount} gold coins!`);
-                loots[i].remove();
-                loots.splice(i, 1);
             }
         }
-    }
 
-    // Check Level Exit
-    if (dungeon && dungeon.getExit()) {
-        const playerPos = camera.position;
-        if (dungeon.getExit().containsPoint(playerPos)) {
-            currentLevel++;
-            loadLevel(currentLevel);
+        // Check Level Exit
+        if (dungeon && dungeon.getExit()) {
+            const playerPos = camera.position;
+            if (dungeon.getExit().containsPoint(playerPos)) {
+                currentLevel++;
+                loadLevel(currentLevel);
+            }
         }
     }
 
