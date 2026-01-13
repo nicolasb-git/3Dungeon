@@ -5,6 +5,7 @@ export const ITEMS = {
         itemClass: 'Armor',
         itemType: 'torso',
         defense: 5,
+        price: 50,
         icon: '/tunic_icon.png'
     },
     rusty_chainmail: {
@@ -13,6 +14,7 @@ export const ITEMS = {
         itemClass: 'Armor',
         itemType: 'torso',
         defense: 8,
+        price: 150,
         icon: '/chainmail_icon.png'
     },
     iron_plate: {
@@ -21,6 +23,7 @@ export const ITEMS = {
         itemClass: 'Armor',
         itemType: 'torso',
         defense: 12,
+        price: 400,
         icon: '/iron_plate_icon.png'
     },
     healing_potion: {
@@ -28,6 +31,7 @@ export const ITEMS = {
         name: 'Healing Potion',
         itemClass: 'Potion',
         healAmount: 30,
+        price: 25,
         icon: '/potion_icon.png'
     },
     basic_sword: {
@@ -37,6 +41,7 @@ export const ITEMS = {
         minDamage: 2,
         maxDamage: 4,
         cooldown: 0.5,
+        price: 100,
         icon: '/sword_icon.png'
     },
     superior_sword: {
@@ -46,6 +51,7 @@ export const ITEMS = {
         minDamage: 6,
         maxDamage: 10,
         cooldown: 0.4,
+        price: 800,
         icon: '/superior_sword_icon.png'
     }
 };
