@@ -616,5 +616,16 @@ export class Player {
                 // Independent is safer for corners.
             }
         }
+
+        // Low HP HUD Glow
+        const hud = document.getElementById('hud');
+        if (hud) {
+            const hpPercent = this.hp / this.maxHp;
+            if (hpPercent <= 0.25 && this.hp > 0) {
+                hud.classList.add('low-hp');
+            } else {
+                hud.classList.remove('low-hp');
+            }
+        }
     }
 }
