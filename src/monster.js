@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { LOOT_CONFIG } from './lootConfig.js';
-import { Armor, Potion } from './item.js';
+import { Armor, Potion, createItem } from './item.js';
 import { Weapon } from './weapon.js';
 import { MONSTERS } from './monsterDefinitions.js';
 
@@ -215,14 +215,7 @@ export class Monster {
                     results.push({ type: 'gold', amount });
                 } else if (drop.type === 'item') {
                     const data = drop.item;
-                    let item = null;
-                    if (data.itemClass === 'Armor') {
-                        item = new Armor(data.name, data.itemType, data.defense, data.icon);
-                    } else if (data.itemClass === 'Potion') {
-                        item = new Potion(data.name, data.healAmount, data.icon);
-                    } else if (data.itemClass === 'Weapon') {
-                        item = new Weapon(data.name, data.minDamage, data.maxDamage, data.cooldown, data.icon);
-                    }
+                    const item = createItem(data);
                     if (item) results.push({ type: 'item', item });
                 }
             }

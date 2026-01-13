@@ -27,6 +27,21 @@
       <p>You have escaped the labyrinth!</p>
       <button onclick="location.reload()">Play Again</button>
     </div>
+
+    <div id="vendor-overlay" class="overlay">
+      <h1>SLY VENDOR</h1>
+      <div id="vendor-container">
+        <div class="vendor-section">
+          <h2>BUY ITEMS</h2>
+          <div id="shop-list" class="vendor-grid"></div>
+        </div>
+        <div class="vendor-section">
+          <h2>SELL ITEMS</h2>
+          <div id="sell-list" class="vendor-grid"></div>
+        </div>
+      </div>
+      <button id="close-vendor">Return to Dungeon</button>
+    </div>
   </div>
   <div id="hud">
     <div id="portrait">
@@ -39,6 +54,7 @@
       <div class="stat">DEF: <span id="def-val">5</span></div>
       <div class="stat">GOLD: <span id="gold-val">0</span></div>
       <div class="stat">XP: <span id="xp-val">0</span></div>
+      <button id="teleport-btn">🌀 TELEPORT</button>
     </div>
     <div id="inventory">
       <div id="equipment">

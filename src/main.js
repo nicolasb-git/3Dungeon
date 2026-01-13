@@ -4,7 +4,7 @@ import { Player } from './player.js';
 import { Monster } from './monster.js';
 import { Loot } from './loot.js';
 import { Warrior } from './classes.js';
-import { Armor, Item } from './item.js';
+import { Armor, Item, createItem } from './item.js';
 import { ITEMS } from './itemDefinitions.js';
 import { MONSTERS } from './monsterDefinitions.js';
 import { LOOT_CONFIG } from './lootConfig.js';
@@ -289,6 +289,107 @@ if (soundBtn) {
         soundBtn.textContent = player.soundEnabled ? '🔊' : '🔇';
         soundBtn.classList.toggle('muted', !player.soundEnabled);
         addLog(`Sound ${player.soundEnabled ? 'Enabled' : 'Disabled'}`);
+    });
+}
+
+// Vendor System
+const teleportBtn = document.getElementById('teleport-btn');
+const vendorOverlay = document.getElementById('vendor-overlay');
+const closeVendorBtn = document.getElementById('close-vendor');
+const shopListEl = document.getElementById('shop-list');
+const sellListEl = document.getElementById('sell-list');
+
+function openVendor() {
+    if (player.hp <= 0) return;
+    vendorOverlay.style.display = 'flex';
+    player.controls.unlock();
+    renderVendorInventories();
+    addLog("You teleport to the Sly Vendor...");
+}
+
+function closeVendor() {
+    vendorOverlay.style.display = 'none';
+    addLog("Returning to the dungeon...");
+}
+
+function renderVendorInventories() {
+    // Clear lists
+    shopListEl.innerHTML = '';
+    sellListEl.innerHTML = '';
+
+    // Shop Items (All items from ITEMS registry)
+    Object.values(ITEMS).forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'vendor-item';
+        itemDiv.innerHTML = `
+            <img src="${item.icon}" alt="${item.name}">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${item.price} G</div>
+        `;
+        itemDiv.onclick = (event) => {
+            event.stopPropagation();
+            if (player.gold >= item.price) {
+                const newItem = createItem(item);
+                if (newItem && player.addItem(newItem)) {
+                    player.gold -= item.price;
+                    updateHUD();
+                    renderVendorInventories();
+                    addLog(`Bought ${item.name} for ${item.price} gold.`);
+                } else if (!newItem) {
+                    addLog("Error creating item!");
+                } else {
+                    addLog("Backpack is full!");
+                }
+            } else {
+                addLog("Not enough gold!");
+            }
+        };
+        shopListEl.appendChild(itemDiv);
+    });
+
+    // Sell Items (Player's inventory)
+    player.inventory.forEach((item, index) => {
+        if (!item) return;
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'vendor-item';
+        const sellPrice = Math.floor(item.price * 0.5); // Sell for 50%
+        itemDiv.innerHTML = `
+            <img src="${item.icon}" alt="${item.name}">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">${sellPrice} G</div>
+        `;
+        itemDiv.onclick = (event) => {
+            event.stopPropagation();
+            player.gold += sellPrice;
+            player.inventory[index] = null;
+            updateHUD();
+            renderVendorInventories();
+            addLog(`Sold ${item.name} for ${sellPrice} gold.`);
+        };
+        sellListEl.appendChild(itemDiv);
+    });
+}
+
+function updateHUD() {
+    player.updateUI();
+}
+
+if (teleportBtn) {
+    teleportBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openVendor();
+    });
+}
+
+if (vendorOverlay) {
+    vendorOverlay.addEventListener('click', (event) => {
+        event.stopPropagation();
+    });
+}
+
+if (closeVendorBtn) {
+    closeVendorBtn.addEventListener('click', () => {
+        closeVendor();
     });
 }
 

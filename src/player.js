@@ -263,7 +263,7 @@ export class Player {
             const slotEl = document.getElementById(`slot-${slotName}`);
             if (slotEl) {
                 if (item) {
-                    slotEl.style.backgroundImage = `url('${item.iconUrl}')`;
+                    slotEl.style.backgroundImage = `url('${item.icon}')`;
                     slotEl.classList.add('equipped');
                 } else {
                     slotEl.style.backgroundImage = 'none';
@@ -277,7 +277,7 @@ export class Player {
         backpackSlots.forEach((slotEl, index) => {
             const item = this.inventory[index];
             if (item) {
-                slotEl.style.backgroundImage = `url('${item.iconUrl}')`;
+                slotEl.style.backgroundImage = `url('${item.icon}')`;
                 slotEl.classList.add('has-item');
                 slotEl.title = item.name;
             } else {
