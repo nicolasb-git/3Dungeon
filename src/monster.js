@@ -25,6 +25,7 @@ export class Monster {
         this.maxAttackCooldown = config.maxAttackCooldown;
         this.walkingSpeed = config.walkingSpeed;
         this.texturePaths = config.texturePaths;
+        this.scale = config.scale || 0.8;
 
         this._loadTextures();
     }
@@ -72,9 +73,9 @@ export class Monster {
                     transparent: true
                 });
                 this.sprite = new THREE.Sprite(spriteMaterial);
-                this.sprite.scale.set(0.8, 0.8, 1);
+                this.sprite.scale.set(this.scale, this.scale, 1);
                 this.sprite.position.copy(this.initialPosition);
-                this.sprite.position.y = 0.4;
+                this.sprite.position.y = this.scale / 2;
                 this.scene.add(this.sprite);
 
                 this.box = new THREE.Box3();
@@ -88,7 +89,7 @@ export class Monster {
 
     updateBox() {
         if (this.sprite) {
-            this.box.setFromCenterAndSize(this.sprite.position, new THREE.Vector3(0.4, 0.8, 0.4));
+            this.box.setFromCenterAndSize(this.sprite.position, new THREE.Vector3(this.scale * 0.5, this.scale, this.scale * 0.5));
         }
     }
 

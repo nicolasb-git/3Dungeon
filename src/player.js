@@ -13,6 +13,7 @@ export class Player {
         this.direction = new THREE.Vector3();
         this.isLocked = false;
         this.speed = 5.0; // Movement speed
+        this.isGodMode = false;
 
         // Initialize stats from character class
         this.hp = characterClass.hp;
@@ -94,6 +95,10 @@ export class Player {
                 case 'KeyD':
                     this.moveRight = true;
                     break;
+                case 'KeyG':
+                    this.isGodMode = !this.isGodMode;
+                    this.updateUI();
+                    break;
             }
         };
 
@@ -123,6 +128,7 @@ export class Player {
     }
 
     takeDamage(amount) {
+        if (this.isGodMode) return { actualDamage: 0, baseDamage: amount, def: 999, isDead: false };
         const totalDef = this.getTotalDefense();
         const actualDamage = amount > 0 ? Math.max(1, amount - totalDef) : 0;
         this.hp = Math.max(0, this.hp - actualDamage);
@@ -230,7 +236,7 @@ export class Player {
                 const dot = forward.dot(mDir);
 
                 if (dot > 0.45) { // Slightly wider cone
-                    const baseDamage = this.weapon.getDamage();
+                    const baseDamage = this.isGodMode ? 9999 : this.weapon.getDamage();
                     const totalDamage = baseDamage + this.str;
                     const isDead = monster.takeDamage(totalDamage);
                     hits.push({ damage: totalDamage, baseDamage, str: this.str, isDead, monster });
@@ -256,6 +262,12 @@ export class Player {
         if (goldEl) goldEl.textContent = this.gold;
         if (xpEl) xpEl.textContent = `${this.xp} / ${this.xpToNextLevel}`;
         if (lvlEl) lvlEl.textContent = this.level;
+
+        // God Mode Indicator (Buff Icon)
+        const godModeEl = document.getElementById('buff-god-mode');
+        if (godModeEl) {
+            godModeEl.style.display = this.isGodMode ? 'block' : 'none';
+        }
 
         // Update Equipment Slots
         for (const slotName in this.equipment) {

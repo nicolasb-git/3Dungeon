@@ -9,6 +9,7 @@ export const MONSTERS = {
         walkingSpeed: 1.0,
         startLevel: 1,
         spawnWeight: 10,
+        scale: 0.8,
         texturePaths: {
             idle: '/monster.png',
             attack: '/monster_attack.png'
@@ -24,6 +25,7 @@ export const MONSTERS = {
         walkingSpeed: 0.8,
         startLevel: 2,
         spawnWeight: 5,
+        scale: 0.8,
         texturePaths: {
             idle: '/skeleton.png',
             attack: '/skeleton_attack.png'
@@ -38,7 +40,8 @@ export const MONSTERS = {
         maxAttackCooldown: 1.8,
         walkingSpeed: 0.6,
         startLevel: 4,
-        spawnWeight: 3,
+        spawnWeight: 4, // Slightly increased weight
+        scale: 0.85,
         texturePaths: {
             idle: '/knight_skeleton.png',
             attack: '/knight_skeleton_attack.png'
