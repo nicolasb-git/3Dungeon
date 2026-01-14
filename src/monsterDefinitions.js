@@ -36,7 +36,7 @@ export const MONSTERS = {
         name: "Skeletal Knight",
         hp: 80,
         def: 10,
-        attackDamage: { min: 12, max: 18 },
+        attackDamage: { min: 8, max: 12 },
         maxAttackCooldown: 1.8,
         walkingSpeed: 0.6,
         startLevel: 4,

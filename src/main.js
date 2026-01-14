@@ -292,6 +292,26 @@ if (soundBtn) {
     });
 }
 
+// God Console
+window.addEventListener('keydown', (e) => {
+    if ((e.key === '²' || e.code === 'Backquote') && player.isGodMode) {
+        const cmd = prompt("GOD CONSOLE: Enter command (e.g. 'level 5')");
+        if (cmd) {
+            const match = cmd.match(/level\s+(\d+)/i);
+            if (match) {
+                const target = parseInt(match[1]);
+                if (target > 0) {
+                    addLog(`Teleporting to Level ${target}...`);
+                    currentLevel = target;
+                    loadLevel(currentLevel);
+                } else {
+                    addLog("Invalid Level Number.");
+                }
+            }
+        }
+    }
+});
+
 // Vendor System
 const teleportBtn = document.getElementById('teleport-btn');
 const vendorOverlay = document.getElementById('vendor-overlay');
