@@ -17,6 +17,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.15,
             item: ITEMS.healing_potion
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.basic_shield
         }
     ],
     skeleton: [
@@ -50,6 +55,16 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.superior_sword
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.basic_shield
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.iron_shield
         }
     ],
     knight_skeleton: [
@@ -73,6 +88,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.15,
             item: ITEMS.superior_sword
+        },
+        {
+            type: 'item',
+            chance: 0.2,
+            item: ITEMS.iron_shield
         }
     ]
 };

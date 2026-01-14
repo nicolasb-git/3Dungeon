@@ -53,5 +53,23 @@ export const ITEMS = {
         cooldown: 0.4,
         price: 800,
         icon: '/superior_sword_icon.png'
+    },
+    basic_shield: {
+        id: 'basic_shield',
+        name: 'Wooden Shield',
+        itemClass: 'Armor',
+        itemType: 'l-hand',
+        defense: 3,
+        price: 75,
+        icon: '/basic_shield_icon.png'
+    },
+    iron_shield: {
+        id: 'iron_shield',
+        name: 'Iron Shield',
+        itemClass: 'Armor',
+        itemType: 'l-hand',
+        defense: 7,
+        price: 250,
+        icon: '/iron_shield_icon.png'
     }
 };
