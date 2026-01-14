@@ -381,7 +381,7 @@ function renderVendorInventories() {
         itemDiv.onclick = (event) => {
             event.stopPropagation();
             player.gold += sellPrice;
-            player.inventory[index] = null;
+            player.inventory.splice(index, 1);
             updateHUD();
             renderVendorInventories();
             addLog(`Sold ${item.name} for ${sellPrice} gold.`);
