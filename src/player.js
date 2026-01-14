@@ -277,9 +277,14 @@ export class Player {
                 if (item) {
                     slotEl.style.backgroundImage = `url('${item.icon}')`;
                     slotEl.classList.add('equipped');
+                    slotEl.onmouseenter = () => this._showTooltip(item);
+                    slotEl.onmouseleave = () => this._hideTooltip();
+                    slotEl.title = ""; // Disable native tooltip
                 } else {
                     slotEl.style.backgroundImage = 'none';
                     slotEl.classList.remove('equipped');
+                    slotEl.onmouseenter = null;
+                    slotEl.onmouseleave = null;
                 }
             }
         }
@@ -291,13 +296,70 @@ export class Player {
             if (item) {
                 slotEl.style.backgroundImage = `url('${item.icon}')`;
                 slotEl.classList.add('has-item');
-                slotEl.title = item.name;
+                slotEl.onmouseenter = () => this._showTooltip(item);
+                slotEl.onmouseleave = () => this._hideTooltip();
+                slotEl.title = ""; // Disable native tooltip
             } else {
                 slotEl.style.backgroundImage = 'none';
                 slotEl.classList.remove('has-item');
+                slotEl.onmouseenter = null;
+                slotEl.onmouseleave = null;
                 slotEl.title = `Backpack Slot ${index + 1}`;
             }
         });
+    }
+
+    _showTooltip(item) {
+        const tooltip = document.getElementById('tooltip');
+        if (!tooltip) return;
+
+        let statsHtml = '';
+        if (item.minDamage) {
+            statsHtml += `<div class="tooltip-stat"><span class="stat-label">Damage:</span> <span class="stat-val-atk">${item.minDamage}-${item.maxDamage}</span></div>`;
+            statsHtml += `<div class="tooltip-stat"><span class="stat-label">Speed:</span> <span>${item.cooldown}s</span></div>`;
+        }
+        if (item.defense) {
+            statsHtml += `<div class="tooltip-stat"><span class="stat-label">Defense:</span> <span class="stat-val-def">+${item.defense}</span></div>`;
+        }
+        if (item.healAmount) {
+            statsHtml += `<div class="tooltip-stat"><span class="stat-label">Heal:</span> <span class="stat-val-heal">${item.healAmount} HP</span></div>`;
+        }
+
+        statsHtml += `<div class="tooltip-stat"><span class="stat-label">Value:</span> <span class="stat-val-price">${item.price} G</span></div>`;
+
+        // Better type display: use itemClass if available, else fallback to type or itemType
+        const typeText = (item.itemClass || item.type || item.itemType || 'item').toUpperCase();
+
+        tooltip.innerHTML = `
+            <div class="tooltip-name">${item.name}</div>
+            <div class="tooltip-type">${typeText}</div>
+            <div class="tooltip-stats">${statsHtml}</div>
+        `;
+
+        // Immediate positioning using global mouse coords
+        if (window.mouseX !== undefined) {
+            const x = window.mouseX + 15;
+            const y = window.mouseY + 15;
+
+            // Boundary checks (simplified, global listener will refine on next move)
+            const width = 150; // min-width
+            const height = 100; // rough estimate for immediate placement
+
+            let finalX = x;
+            let finalY = y;
+            if (x + width > window.innerWidth) finalX = window.mouseX - width - 15;
+            if (y + height > window.innerHeight) finalY = window.mouseY - height - 15;
+
+            tooltip.style.left = `${finalX}px`;
+            tooltip.style.top = `${finalY}px`;
+        }
+
+        tooltip.classList.remove('hidden');
+    }
+
+    _hideTooltip() {
+        const tooltip = document.getElementById('tooltip');
+        if (tooltip) tooltip.classList.add('hidden');
     }
 
     addGold(amount) {

@@ -578,3 +578,74 @@ html {
   background: #e74c3c;
   box-shadow: 0 0 20px #e74c3c;
 }
+
+#tooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(15, 15, 15, 0.95);
+  opacity: 1;
+  border: 1px solid #f39c12;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(243, 156, 18, 0.2);
+  color: #eee;
+  padding: 12px;
+  border-radius: 4px;
+  z-index: 9999;
+  font-family: inherit;
+  min-width: 150px;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.15s ease;
+}
+
+#tooltip.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.tooltip-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #f39c12;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(243, 156, 18, 0.3);
+  padding-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tooltip-type {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.tooltip-stat {
+  font-size: 14px;
+  margin: 3px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-label {
+  color: #aaa;
+}
+
+.stat-val-atk {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.stat-val-def {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.stat-val-heal {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.stat-val-price {
+  color: #f1c40f;
+  font-weight: bold;
+}

@@ -364,6 +364,10 @@ function renderVendorInventories() {
                 addLog("Not enough gold!");
             }
         };
+
+        itemDiv.onmouseenter = () => player._showTooltip(item);
+        itemDiv.onmouseleave = () => player._hideTooltip();
+
         shopListEl.appendChild(itemDiv);
     });
 
@@ -382,10 +386,15 @@ function renderVendorInventories() {
             event.stopPropagation();
             player.gold += sellPrice;
             player.inventory.splice(index, 1);
+            player._hideTooltip(); // Hide tooltip after selling
             updateHUD();
             renderVendorInventories();
             addLog(`Sold ${item.name} for ${sellPrice} gold.`);
         };
+
+        itemDiv.onmouseenter = () => player._showTooltip(item);
+        itemDiv.onmouseleave = () => player._hideTooltip();
+
         sellListEl.appendChild(itemDiv);
     });
 }
@@ -445,6 +454,36 @@ document.querySelectorAll('#equipment .slot').forEach(slot => {
             addLog(`Unequipped ${item.name}`);
         }
     });
+});
+
+// Mouse Tracking for Tooltips
+window.mouseX = 0;
+window.mouseY = 0;
+
+window.addEventListener('mousemove', (e) => {
+    window.mouseX = e.clientX;
+    window.mouseY = e.clientY;
+
+    const tooltip = document.getElementById('tooltip');
+    if (tooltip) {
+        const x = window.mouseX + 15;
+        const y = window.mouseY + 15;
+
+        // Keep tooltip inside window boundaries
+        const width = tooltip.offsetWidth;
+        const height = tooltip.offsetHeight;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        let finalX = x;
+        let finalY = y;
+
+        if (x + width > windowWidth) finalX = window.mouseX - width - 15;
+        if (y + height > windowHeight) finalY = window.mouseY - height - 15;
+
+        tooltip.style.left = `${finalX}px`;
+        tooltip.style.top = `${finalY}px`;
+    }
 });
 
 // Loop
