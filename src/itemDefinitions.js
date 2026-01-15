@@ -71,5 +71,14 @@ export const ITEMS = {
         defense: 7,
         price: 250,
         icon: '/iron_shield_icon.png'
+    },
+    iron_helmet: {
+        id: 'iron_helmet',
+        name: 'Iron Helmet',
+        itemClass: 'Armor',
+        itemType: 'head',
+        defense: 4,
+        price: 120,
+        icon: '/iron_helmet_icon.png'
     }
 };
