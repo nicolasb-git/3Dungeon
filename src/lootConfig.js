@@ -70,6 +70,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.iron_helmet
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.iron_greaves
         }
     ],
     knight_skeleton: [
@@ -103,6 +108,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.1,
             item: ITEMS.iron_helmet
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.iron_greaves
         }
     ]
 };

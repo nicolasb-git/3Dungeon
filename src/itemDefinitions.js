@@ -80,5 +80,14 @@ export const ITEMS = {
         defense: 4,
         price: 120,
         icon: '/iron_helmet_icon.png'
+    },
+    iron_greaves: {
+        id: 'iron_greaves',
+        name: 'Iron Greaves',
+        itemClass: 'Armor',
+        itemType: 'legs',
+        defense: 5,
+        price: 150,
+        icon: '/iron_greaves_icon.png'
     }
 };
