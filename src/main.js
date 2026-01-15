@@ -16,6 +16,7 @@ let currentLevel = 1;
 let dungeon = null;
 let monsters = []; // Store active monsters
 let loots = []; // Store active loot
+let lastInvFullMsgTime = 0; // Throttle for inventory full messages
 
 // Scene Setup
 const scene = new THREE.Scene();
@@ -580,10 +581,21 @@ function animate() {
         for (let i = loots.length - 1; i >= 0; i--) {
             if (playerBox.intersectsBox(loots[i].getBoundingBox())) {
                 if (loots[i].item) {
-                    if (player.addItem(loots[i].item)) {
-                        addLog(`You picked up: ${loots[i].item.name}`);
-                        loots[i].remove();
-                        loots.splice(i, 1);
+                    // Check if inventory is full before trying to pick up
+                    if (player.inventory.length >= player.maxInventory) {
+                        const now = Date.now();
+                        if (now - lastInvFullMsgTime > 3000) {
+                            addLog("Your backpack is full! Free some space to pick up the item.");
+                            lastInvFullMsgTime = now;
+                        }
+                        // Item stays on floor (not removed from loots, not removed from scene)
+                    } else {
+                        const itemToPick = loots[i].item;
+                        if (player.addItem(itemToPick)) {
+                            addLog(`You picked up: ${itemToPick.name}`);
+                            loots[i].remove();
+                            loots.splice(i, 1);
+                        }
                     }
                 } else {
                     const amount = loots[i].amount;
