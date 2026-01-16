@@ -24,7 +24,7 @@ export const STATUSES = {
         id: 'strength',
         name: 'Strength Boost',
         type: 'buff',
-        icon: '/god_mode_icon.png', // Placeholder
+        icon: '/strength_potion.png', // Updated icon
         duration: 60,
         description: (player) => `+5 STR for 60s`,
         onApply: (player, logger) => {

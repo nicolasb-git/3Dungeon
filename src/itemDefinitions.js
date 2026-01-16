@@ -30,9 +30,19 @@ export const ITEMS = {
         id: 'healing_potion',
         name: 'Healing Potion',
         itemClass: 'Potion',
+        type: 'consumable',
         healAmount: 30,
         price: 25,
         icon: '/potion_icon.png'
+    },
+    strength_potion: {
+        id: 'strength_potion',
+        name: 'Strength Potion',
+        itemClass: 'Potion',
+        type: 'consumable',
+        statusId: 'strength',
+        price: 75,
+        icon: '/strength_potion.png'
     },
     basic_sword: {
         id: 'basic_sword',

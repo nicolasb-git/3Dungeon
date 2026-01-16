@@ -433,7 +433,7 @@ document.querySelectorAll('.backpack-slot').forEach((slot, index) => {
         event.stopPropagation(); // Prevent triggering an attack click
         const item = player.inventory[index];
         if (item) {
-            if (item.type === 'consumable') {
+            if (item.type === 'consumable' || item.itemClass === 'Potion') {
                 const result = player.useItem(item, index, monsters);
                 if (result.success) {
                     addLog(result.message);

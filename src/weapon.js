@@ -6,6 +6,7 @@ export class Weapon extends Item {
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         this.cooldown = cooldown;
+        this.itemClass = 'Weapon';
     }
 
     getDamage() {

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { Weapon } from './weapon.js';
+import { STATUSES } from './statusDefinitions.js';
 
 export class Player {
     constructor(camera, domElement, characterClass) {
@@ -166,7 +167,7 @@ export class Player {
     }
 
     useItem(item, index, monsters) {
-        if (item.type === 'consumable') {
+        if (item.type === 'consumable' || item.itemClass === 'Potion') {
             if (item.healAmount) {
                 if (this.hp >= this.maxHp) {
                     return { success: false, message: "Your health is already full!" };
@@ -176,6 +177,13 @@ export class Player {
                 this._hideTooltip();
                 this.updateUI();
                 return { success: true, message: `Used ${item.name} and healed for ${item.healAmount} HP` };
+            }
+            if (item.statusId && STATUSES[item.statusId]) {
+                this.applyStatus(STATUSES[item.statusId]);
+                this.inventory.splice(index, 1);
+                this._hideTooltip();
+                this.updateUI();
+                return { success: true, message: `Used ${item.name} and gained ${STATUSES[item.statusId].name}` };
             }
         }
         return { success: false };
@@ -287,21 +295,39 @@ export class Player {
         if (xpEl) xpEl.textContent = `${this.xp} / ${this.xpToNextLevel}`;
         if (lvlEl) lvlEl.textContent = this.level;
 
-        // God Mode Indicator (Buff Icon)
-        const godModeEl = document.getElementById('buff-god-mode');
-        if (godModeEl) {
-            godModeEl.style.display = this.isGodMode ? 'block' : 'none';
-        }
+        // Update Buff Bar
+        const buffBar = document.getElementById('buff-bar');
+        if (buffBar) {
+            // Clear existing except special ones if needed, or just clear all
+            buffBar.innerHTML = '';
 
-        // Plague Indicator
-        const plagueEl = document.getElementById('buff-plague');
-        if (plagueEl) {
-            const plague = this.statuses.find(s => s.id === 'plague');
-            plagueEl.style.display = plague ? 'block' : 'none';
-            if (plague) {
-                const desc = typeof plague.description === 'function' ? plague.description(this) : plague.description;
-                plagueEl.title = `${plague.name}: ${Math.ceil(plague.duration)}s remaining. ${desc}`;
+            // God Mode (Special case)
+            if (this.isGodMode) {
+                const godEl = document.createElement('div');
+                godEl.id = 'buff-god-mode';
+                godEl.className = 'buff-icon';
+                godEl.title = 'God Mode Active';
+                buffBar.appendChild(godEl);
             }
+
+            // Statuses from statusDefinitions
+            this.statuses.forEach(status => {
+                const statusEl = document.createElement('div');
+                statusEl.className = `buff-icon ${status.type || ''}`;
+                statusEl.style.backgroundImage = `url('${status.icon}')`;
+                const desc = typeof status.description === 'function' ? status.description(this) : status.description;
+                statusEl.title = `${status.name}: ${Math.ceil(status.duration)}s remaining. ${desc}`;
+
+                // Add unique styling if needed via ID or class
+                if (status.id === 'plague') {
+                    statusEl.id = 'buff-plague';
+                    statusEl.classList.add('debuff');
+                } else if (status.id === 'strength') {
+                    statusEl.id = 'buff-strength';
+                }
+
+                buffBar.appendChild(statusEl);
+            });
         }
 
         // Update Equipment Slots

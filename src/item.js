@@ -11,13 +11,16 @@ export class Armor extends Item {
     constructor(name, type, defense, icon, price = 0) {
         super(name, type, icon, price);
         this.defense = defense;
+        this.itemClass = 'Armor';
     }
 }
 
 export class Potion extends Item {
-    constructor(name, healAmount, icon, price = 0) {
+    constructor(name, icon, price = 0, options = {}) {
         super(name, 'consumable', icon, price);
-        this.healAmount = healAmount;
+        this.healAmount = options.healAmount || 0;
+        this.statusId = options.statusId || null;
+        this.itemClass = 'Potion';
     }
 }
 
@@ -28,7 +31,11 @@ export function createItem(data) {
     if (data.itemClass === 'Armor') {
         return new Armor(data.name, data.itemType, data.defense, data.icon, data.price);
     } else if (data.itemClass === 'Potion') {
-        return new Potion(data.name, data.healAmount, data.icon, data.price);
+        const type = data.type || 'consumable';
+        return new Potion(data.name, data.icon, data.price, {
+            healAmount: data.healAmount,
+            statusId: data.statusId
+        });
     } else if (data.itemClass === 'Weapon') {
         return new Weapon(data.name, data.minDamage, data.maxDamage, data.cooldown, data.icon, data.price);
     }

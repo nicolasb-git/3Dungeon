@@ -22,6 +22,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.basic_shield
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.strength_potion
         }
     ],
     skeleton: [
@@ -75,6 +80,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.iron_greaves
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.strength_potion
         }
     ],
     knight_skeleton: [
@@ -113,6 +123,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.iron_greaves
+        },
+        {
+            type: 'item',
+            chance: 0.15,
+            item: ITEMS.strength_potion
         }
     ],
     rat: [
