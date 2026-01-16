@@ -61,6 +61,7 @@ export class Player {
         this.soundEnabled = true;
 
         this.statuses = [];
+        this.logger = null; // Callback for addLog
         this._initListeners(domElement);
     }
 
@@ -146,14 +147,20 @@ export class Player {
     }
 
     applyStatus(status) {
-        // status = { id, name, duration, tickTimer, totalDuration, onTick }
+        // status = { id, name, duration, tickInterval, onTick, onApply, onRemove, ... }
         const existing = this.statuses.find(s => s.id === status.id);
         if (existing) {
-            existing.duration = status.duration; // Refresh duration
+            existing.duration = status.duration;
             existing.totalDuration = status.duration;
-            existing.tickTimer = status.tickTimer; // Reset tick timer? User said every 10s.
+            existing.tickTimer = status.tickInterval || 0;
         } else {
-            this.statuses.push({ ...status, totalDuration: status.duration });
+            const newStatus = {
+                ...status,
+                totalDuration: status.duration,
+                tickTimer: status.tickInterval || 0
+            };
+            this.statuses.push(newStatus);
+            if (newStatus.onApply) newStatus.onApply(this, this.logger);
         }
         this.updateUI();
     }
@@ -292,7 +299,8 @@ export class Player {
             const plague = this.statuses.find(s => s.id === 'plague');
             plagueEl.style.display = plague ? 'block' : 'none';
             if (plague) {
-                plagueEl.title = `Plague: ${Math.ceil(plague.duration)}s remaining. Loses 2% current HP every 10s.`;
+                const desc = typeof plague.description === 'function' ? plague.description(this) : plague.description;
+                plagueEl.title = `${plague.name}: ${Math.ceil(plague.duration)}s remaining. ${desc}`;
             }
         }
 
@@ -604,12 +612,13 @@ export class Player {
             status.duration -= delta;
             status.tickTimer -= delta;
 
-            if (status.tickTimer <= 0) {
-                if (status.onTick) status.onTick(this);
-                status.tickTimer = 10; // Reset tick to 10s as per requirements
+            if (status.tickTimer <= 0 && status.tickInterval) {
+                if (status.onTick) status.onTick(this, this.logger);
+                status.tickTimer = status.tickInterval;
             }
 
             if (status.duration <= 0) {
+                if (status.onRemove) status.onRemove(this, this.logger);
                 this.statuses.splice(i, 1);
                 this.updateUI();
             }

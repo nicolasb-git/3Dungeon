@@ -8,6 +8,7 @@ import { Armor, Item, createItem } from './item.js';
 import { ITEMS } from './itemDefinitions.js';
 import { MONSTERS } from './monsterDefinitions.js';
 import { LOOT_CONFIG } from './lootConfig.js';
+import { STATUSES } from './statusDefinitions.js';
 import './style.css';
 
 // Dynamic Map Import
@@ -124,6 +125,7 @@ function triggerBloodFlash() {
 // Player (Initialize once)
 const warrior = new Warrior();
 const player = new Player(camera, document.getElementById('game-container'), warrior);
+player.logger = addLog;
 document.getElementById('floor-val').textContent = currentLevel;
 player.updateUI();
 
@@ -537,21 +539,7 @@ function animate() {
                             // Apply plague if monster has the chance
                             const monsterConfig = MONSTERS[m.type];
                             if (monsterConfig && monsterConfig.plagueChance && Math.random() < monsterConfig.plagueChance) {
-                                player.applyStatus({
-                                    id: 'plague',
-                                    name: 'Plague',
-                                    duration: 120, // 2 minutes
-                                    tickTimer: 10,
-                                    onTick: (p) => {
-                                        const damage = Math.ceil(p.hp * 0.02);
-                                        p.hp = Math.max(0, p.hp - damage);
-                                        p.updateUI();
-                                        addLog(`The plague wracks your body... (-${damage} HP)`);
-                                        if (p.hp <= 0) {
-                                            addLog("You have succumbed to the plague.");
-                                        }
-                                    }
-                                });
+                                player.applyStatus(STATUSES.plague);
                                 addLog("You have been infected with the Plague!");
                             }
 
