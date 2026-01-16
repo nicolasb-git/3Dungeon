@@ -330,6 +330,7 @@ function openVendor() {
 
 function closeVendor() {
     vendorOverlay.style.display = 'none';
+    player._hideTooltip();
     addLog("Returning to the dungeon...");
 }
 
@@ -353,6 +354,7 @@ function renderVendorInventories() {
                 const newItem = createItem(item);
                 if (newItem && player.addItem(newItem)) {
                     player.gold -= item.price;
+                    player._hideTooltip();
                     updateHUD();
                     renderVendorInventories();
                     addLog(`Bought ${item.name} for ${item.price} gold.`);
@@ -614,6 +616,7 @@ function animate() {
                     } else {
                         const itemToPick = loots[i].item;
                         if (player.addItem(itemToPick)) {
+                            player._hideTooltip();
                             addLog(`You picked up: ${itemToPick.name}`);
                             loots[i].remove();
                             loots.splice(i, 1);

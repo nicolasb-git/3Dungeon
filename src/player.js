@@ -166,6 +166,7 @@ export class Player {
                 }
                 this.heal(item.healAmount);
                 this.inventory.splice(index, 1);
+                this._hideTooltip();
                 this.updateUI();
                 return { success: true, message: `Used ${item.name} and healed for ${item.healAmount} HP` };
             }
@@ -211,6 +212,7 @@ export class Player {
             this.maxAttackCooldown = item.cooldown;
         }
 
+        this._hideTooltip();
         this.updateUI();
     }
 
@@ -223,6 +225,7 @@ export class Player {
                 this.maxAttackCooldown = this.weapon.cooldown;
             }
             this.inventory.push(item);
+            this._hideTooltip();
             this.updateUI();
         }
     }
