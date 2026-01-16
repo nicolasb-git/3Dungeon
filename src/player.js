@@ -60,6 +60,7 @@ export class Player {
         this.audioCtx = null;
         this.soundEnabled = true;
 
+        this.statuses = [];
         this._initListeners(domElement);
     }
 
@@ -142,6 +143,19 @@ export class Player {
         const actualHeal = this.hp - previousHP;
         this.updateUI();
         return actualHeal;
+    }
+
+    applyStatus(status) {
+        // status = { id, name, duration, tickTimer, totalDuration, onTick }
+        const existing = this.statuses.find(s => s.id === status.id);
+        if (existing) {
+            existing.duration = status.duration; // Refresh duration
+            existing.totalDuration = status.duration;
+            existing.tickTimer = status.tickTimer; // Reset tick timer? User said every 10s.
+        } else {
+            this.statuses.push({ ...status, totalDuration: status.duration });
+        }
+        this.updateUI();
     }
 
     useItem(item, index, monsters) {
@@ -267,6 +281,16 @@ export class Player {
         const godModeEl = document.getElementById('buff-god-mode');
         if (godModeEl) {
             godModeEl.style.display = this.isGodMode ? 'block' : 'none';
+        }
+
+        // Plague Indicator
+        const plagueEl = document.getElementById('buff-plague');
+        if (plagueEl) {
+            const plague = this.statuses.find(s => s.id === 'plague');
+            plagueEl.style.display = plague ? 'block' : 'none';
+            if (plague) {
+                plagueEl.title = `Plague: ${Math.ceil(plague.duration)}s remaining. Loses 2% current HP every 10s.`;
+            }
         }
 
         // Update Equipment Slots
@@ -568,6 +592,23 @@ export class Player {
             this.slashSprite.material.opacity = Math.max(0, this.slashTimer / 0.2);
             if (this.slashTimer <= 0) {
                 this.slashSprite.visible = false;
+            }
+        }
+
+        // Status Effects
+        for (let i = this.statuses.length - 1; i >= 0; i--) {
+            const status = this.statuses[i];
+            status.duration -= delta;
+            status.tickTimer -= delta;
+
+            if (status.tickTimer <= 0) {
+                if (status.onTick) status.onTick(this);
+                status.tickTimer = 10; // Reset tick to 10s as per requirements
+            }
+
+            if (status.duration <= 0) {
+                this.statuses.splice(i, 1);
+                this.updateUI();
             }
         }
 

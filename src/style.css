@@ -273,6 +273,13 @@ html {
   animation: buff-pulse 2s infinite ease-in-out;
 }
 
+#buff-plague {
+  background-image: url('/plague_icon.png');
+  border-color: #27ae60;
+  box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+  animation: buff-pulse 1s infinite ease-in-out;
+}
+
 @keyframes buff-pulse {
   0% {
     transform: scale(0.9);

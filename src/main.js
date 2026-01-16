@@ -531,6 +531,28 @@ function animate() {
                             showDamageNumber(null, result.actualDamage, 'player');
                             m.playAttackAnimation();
                             addLog(`The ${m.name} hits you for ${result.actualDamage} damage (${result.baseDamage} - ${result.def} DEF)!`);
+
+                            // Apply plague if monster has the chance
+                            const monsterConfig = MONSTERS[m.type];
+                            if (monsterConfig && monsterConfig.plagueChance && Math.random() < monsterConfig.plagueChance) {
+                                player.applyStatus({
+                                    id: 'plague',
+                                    name: 'Plague',
+                                    duration: 120, // 2 minutes
+                                    tickTimer: 10,
+                                    onTick: (p) => {
+                                        const damage = Math.ceil(p.hp * 0.02);
+                                        p.hp = Math.max(0, p.hp - damage);
+                                        p.updateUI();
+                                        addLog(`The plague wracks your body... (-${damage} HP)`);
+                                        if (p.hp <= 0) {
+                                            addLog("You have succumbed to the plague.");
+                                        }
+                                    }
+                                });
+                                addLog("You have been infected with the Plague!");
+                            }
+
                             m.attackCooldown = m.maxAttackCooldown;
                         }
                     } else {

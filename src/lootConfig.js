@@ -114,5 +114,18 @@ export const LOOT_CONFIG = {
             chance: 0.05,
             item: ITEMS.iron_greaves
         }
+    ],
+    rat: [
+        {
+            type: 'gold',
+            chance: 0.4,
+            min: 5,
+            max: 12
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.healing_potion
+        }
     ]
 };

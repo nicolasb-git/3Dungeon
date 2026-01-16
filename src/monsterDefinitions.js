@@ -46,5 +46,22 @@ export const MONSTERS = {
             idle: '/knight_skeleton.png',
             attack: '/knight_skeleton_attack.png'
         }
+    },
+    rat: {
+        id: 'rat',
+        name: "Plague Rat",
+        hp: 15,
+        def: 0,
+        attackDamage: { min: 3, max: 5 },
+        maxAttackCooldown: 0.6,
+        walkingSpeed: 1.8,
+        startLevel: 1,
+        spawnWeight: 12,
+        scale: 0.4,
+        plagueChance: 0.1,
+        texturePaths: {
+            idle: '/rat.png',
+            attack: '/rat_attack.png'
+        }
     }
 };
