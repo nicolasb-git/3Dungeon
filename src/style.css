@@ -341,9 +341,15 @@ html {
 .damage-number.player {
   color: #a020f0;
   /* Purple */
+  font-size: 24px;
   text-shadow: 3px 3px 0px #000, 0 0 20px #4b0082;
-  font-size: 54px;
-  /* Slightly larger for player hits */
+}
+
+.damage-number.player-heavy {
+  color: #ff0000;
+  font-size: 32px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
 }
 
 @keyframes float-bloody {

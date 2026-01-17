@@ -63,5 +63,22 @@ export const MONSTERS = {
             idle: '/rat.png',
             attack: '/rat_attack.png'
         }
+    },
+    skeletal_boss: {
+        id: 'skeletal_boss',
+        name: "Lord of Rattles",
+        hp: 300,
+        def: 15,
+        attackDamage: { min: 10, max: 15 },
+        maxAttackCooldown: 2.0,
+        walkingSpeed: 0.5,
+        startLevel: 11,
+        spawnWeight: 0, // Manual spawn only
+        scale: 1.5,
+        isBoss: true,
+        texturePaths: {
+            idle: '/lord_rattles_idle.png',
+            attack: '/lord_rattles_attack.png'
+        }
     }
 };

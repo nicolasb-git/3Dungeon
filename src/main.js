@@ -213,47 +213,61 @@ function loadLevel(levelIndex) {
     camera.position.copy(startPos);
 
     // Spawn Monsters
-    const numMonsters = 1 + levelIndex;
-    const emptySpaces = dungeon.getEmptySpaces();
-    const validSpaces = emptySpaces.filter(s => {
-        const dist = Math.sqrt(Math.pow(s.x - startPos.x, 2) + Math.pow(s.z - startPos.z, 2));
-        return dist >= 3;
-    });
+    const bossSpawn = dungeon.getBossSpawnPoint();
+    if (!bossSpawn) {
+        const numMonsters = 1 + levelIndex;
+        const emptySpaces = dungeon.getEmptySpaces();
+        const validSpaces = emptySpaces.filter(s => {
+            const dist = Math.sqrt(Math.pow(s.x - startPos.x, 2) + Math.pow(s.z - startPos.z, 2));
+            return dist >= 3;
+        });
 
-    for (let i = 0; i < numMonsters && validSpaces.length > 0; i++) {
-        const rndIdx = Math.floor(Math.random() * validSpaces.length);
-        const spot = validSpaces.splice(rndIdx, 1)[0];
-        const monsterPos = new THREE.Vector3(spot.x, 0, spot.z);
+        for (let i = 0; i < numMonsters && validSpaces.length > 0; i++) {
+            const rndIdx = Math.floor(Math.random() * validSpaces.length);
+            const spot = validSpaces.splice(rndIdx, 1)[0];
+            const monsterPos = new THREE.Vector3(spot.x, 0, spot.z);
 
-        // Decide type (Weighted Random)
-        const available = Object.entries(MONSTERS)
-            .filter(([_, config]) => levelIndex >= (config.startLevel || 1))
-            .map(([id, config]) => ({ id, weight: config.spawnWeight || 1 }));
+            // Decide type (Weighted Random)
+            const available = Object.entries(MONSTERS)
+                .filter(([_, config]) => levelIndex >= (config.startLevel || 1))
+                .map(([id, config]) => ({ id, weight: config.spawnWeight || 1 }));
 
-        const totalWeight = available.reduce((sum, item) => sum + item.weight, 0);
-        let random = Math.random() * totalWeight;
-        let type = available[0].id;
+            const totalWeight = available.reduce((sum, item) => sum + item.weight, 0);
+            let random = Math.random() * totalWeight;
+            let type = available[0].id;
 
-        for (const item of available) {
-            if (random < item.weight) {
-                type = item.id;
-                break;
+            for (const item of available) {
+                if (random < item.weight) {
+                    type = item.id;
+                    break;
+                }
+                random -= item.weight;
             }
-            random -= item.weight;
-        }
 
-        if (type === 'knight_skeleton') {
-            addLog(`A powerful presence emerges... a Skeletal Knight!`);
-        }
+            if (type === 'knight_skeleton') {
+                addLog(`A powerful presence emerges... a Skeletal Knight!`);
+            }
 
-        const monster = new Monster(scene, monsterPos, type);
-        // Buff monsters based on level
-        monster.maxHp += (levelIndex - 1) * 20;
-        monster.hp = monster.maxHp;
-        monster.attackDamage.min += (levelIndex - 1) * 2;
-        monster.attackDamage.max += (levelIndex - 1) * 3;
-        monsters.push(monster);
+            const monster = new Monster(scene, monsterPos, type);
+            // Buff monsters based on level
+            monster.maxHp += (levelIndex - 1) * 20;
+            monster.hp = monster.maxHp;
+            monster.attackDamage.min += (levelIndex - 1) * 2;
+            monster.attackDamage.max += (levelIndex - 1) * 3;
+            monsters.push(monster);
+        }
     }
+
+    // Spawn Boss if map has one
+    if (bossSpawn) {
+        const boss = new Monster(scene, bossSpawn, 'skeletal_boss');
+        monsters.push(boss);
+        addLog("A TERRIFYING presence fills the air... The Lord of Rattles has appeared!");
+    }
+
+    // Ensure Boss Exit is hidden
+    const bossExit = dungeon.getBossExitMesh();
+    if (bossExit) bossExit.visible = false;
 
     if (monsters.length > 0) {
         addLog(`${monsters.length} shadows move in the distance...`);
@@ -525,25 +539,52 @@ function animate() {
                 }
 
                 if (m.spottedPlayer) {
+                    // Logic for Boss preparing attack
+                    if (m.isBoss && m.triggerPowerfulAttack) {
+                        m.triggerPowerfulAttack = false;
+                        // Powerful Attack: Only hits if player is still in range (1.5 units)
+                        if (dist < 1.5) {
+                            const powerDamage = Math.floor(m.getAttackDamage() * 2.5);
+                            const result = player.takeDamage(powerDamage);
+                            player._playScratchSound(); // Maybe a heavier sound later
+                            triggerBloodFlash();
+                            showDamageNumber(null, result.actualDamage, 'player-heavy');
+                            addLog(`CRITICAL HIT! The ${m.name} smashes you for ${result.actualDamage} damage!`);
+                        } else {
+                            addLog(`You narrowly avoided the ${m.name}'s powerful blow!`);
+                        }
+                        m.attackCooldown = m.maxAttackCooldown;
+                        m.playAttackAnimation();
+                    }
+
+                    if (m.preparingPowerfulAttack) return; // Wait for charge
+
                     if (dist < 1.0) {
                         // Attack range
                         if (m.attackCooldown <= 0) {
-                            const baseDamage = m.getAttackDamage();
-                            const result = player.takeDamage(baseDamage);
-                            player._playScratchSound();
-                            triggerBloodFlash();
-                            showDamageNumber(null, result.actualDamage, 'player');
-                            m.playAttackAnimation();
-                            addLog(`The ${m.name} hits you for ${result.actualDamage} damage (${result.baseDamage} - ${result.def} DEF)!`);
+                            if (m.isBoss && Math.random() < 0.2) {
+                                // 20% chance for Powerful Attack
+                                m.startPowerfulAttack();
+                                addLog(`${m.name} is preparing a DEVASTATING attack! BACK AWAY!`);
+                            } else {
+                                // Normal Attack (or non-boss attack)
+                                const baseDamage = m.getAttackDamage();
+                                const result = player.takeDamage(baseDamage);
+                                player._playScratchSound();
+                                triggerBloodFlash();
+                                showDamageNumber(null, result.actualDamage, 'player');
+                                m.playAttackAnimation();
+                                addLog(`The ${m.name} hits you for ${result.actualDamage} damage (${result.baseDamage} - ${result.def} DEF)!`);
 
-                            // Apply plague if monster has the chance
-                            const monsterConfig = MONSTERS[m.type];
-                            if (monsterConfig && monsterConfig.plagueChance && Math.random() < monsterConfig.plagueChance) {
-                                player.applyStatus(STATUSES.plague);
-                                addLog("You have been infected with the Plague!");
+                                // Apply plague if monster has the chance
+                                const monsterConfig = MONSTERS[m.type];
+                                if (monsterConfig && monsterConfig.plagueChance && Math.random() < monsterConfig.plagueChance) {
+                                    player.applyStatus(STATUSES.plague);
+                                    addLog("You have been infected with the Plague!");
+                                }
+
+                                m.attackCooldown = m.maxAttackCooldown;
                             }
-
-                            m.attackCooldown = m.maxAttackCooldown;
                         }
                     } else {
                         // Move towards player (persistent even if LOS is lost)
@@ -576,9 +617,16 @@ function animate() {
                     }
                 });
 
-                if (player.addXP(25)) {
+                if (player.addXP(monsters[i].isBoss ? 500 : 25)) {
                     addLog("LEVEL UP! You feel more powerful!");
                 }
+
+                if (monsters[i].isBoss) {
+                    addLog(`VICTORY! The ${monsters[i].name} has been defeated! The path forward is revealed.`);
+                    const exitMesh = dungeon.getBossExitMesh();
+                    if (exitMesh) exitMesh.visible = true;
+                }
+
                 monsters[i].remove();
                 monsters.splice(i, 1);
             }
@@ -621,12 +669,15 @@ function animate() {
         }
 
         // Check Level Exit
-        if (dungeon && dungeon.getExit()) {
-            const playerPos = camera.position;
-            if (dungeon.getExit().containsPoint(playerPos)) {
-                currentLevel++;
-                loadLevel(currentLevel);
-            }
+        const exitTrigger = dungeon.getExit();
+        const bossExitTrigger = dungeon.getBossExitTrigger();
+        const bossExitMesh = dungeon.getBossExitMesh();
+        const playerPos = camera.position;
+
+        if ((exitTrigger && exitTrigger.containsPoint(playerPos)) ||
+            (bossExitTrigger && bossExitMesh && bossExitMesh.visible && bossExitTrigger.containsPoint(playerPos))) {
+            currentLevel++;
+            loadLevel(currentLevel);
         }
     }
 

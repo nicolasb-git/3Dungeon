@@ -7,6 +7,9 @@ export class Dungeon {
         this.startPosition = new THREE.Vector3(0, 0, 0);
         this.walls = []; // Store wall bounding boxes for collision
         this.emptySpaces = []; // Store empty floor coords
+        this.bossSpawnPoint = null;
+        this.bossExitMesh = null;
+        this.bossExitTrigger = null;
         this.generate();
     }
 
@@ -70,6 +73,21 @@ export class Dungeon {
                     const box = new THREE.Box3();
                     box.setFromCenterAndSize(new THREE.Vector3(x, 1, z), new THREE.Vector3(0.8, 2, 0.8));
                     this.exit = box;
+                } else if (char === 'B') {
+                    // Boss Spawn Position
+                    this.bossSpawnPoint = new THREE.Vector3(x, 0.5, z);
+                } else if (char === '0') {
+                    // Boss Exit (hidden by default)
+                    const door = new THREE.Mesh(doorGeo, doorMaterial);
+                    door.position.set(x, 1, z);
+                    door.visible = false;
+                    this.group.add(door);
+                    this.bossExitMesh = door;
+
+                    // Add trigger box
+                    const box = new THREE.Box3();
+                    box.setFromCenterAndSize(new THREE.Vector3(x, 1, z), new THREE.Vector3(0.8, 2, 0.8));
+                    this.bossExitTrigger = box;
                 } else if (char === ' ') {
                     // Empty floor
                     this.emptySpaces.push({ x, z });
@@ -96,5 +114,17 @@ export class Dungeon {
 
     getEmptySpaces() {
         return this.emptySpaces;
+    }
+
+    getBossSpawnPoint() {
+        return this.bossSpawnPoint;
+    }
+
+    getBossExitMesh() {
+        return this.bossExitMesh;
+    }
+
+    getBossExitTrigger() {
+        return this.bossExitTrigger;
     }
 }

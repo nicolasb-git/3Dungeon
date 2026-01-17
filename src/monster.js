@@ -26,6 +26,12 @@ export class Monster {
         this.walkingSpeed = config.walkingSpeed;
         this.texturePaths = config.texturePaths;
         this.scale = config.scale || 0.8;
+        this.isBoss = config.isBoss || false;
+
+        // Boss Special Attack Properties
+        this.preparingPowerfulAttack = false;
+        this.powerfulAttackTimer = 0;
+        this.isGlowingRed = false;
 
         this._loadTextures();
     }
@@ -112,13 +118,42 @@ export class Monster {
         this.currentState = 'attack';
         this.sprite.material.map = this.textures.attack;
         this.sprite.material.needsUpdate = true;
-        this.sprite.scale.set(1.0, 1.0, 1); // Jump scale for impact
+        this.sprite.scale.set(this.scale + 0.2, this.scale + 0.2, 1); // Jump scale for impact
+        this.sprite.material.color.setHex(0xffffff); // Reset color
         this.animationTimer = 0.5;
+    }
+
+    startPowerfulAttack() {
+        this.preparingPowerfulAttack = true;
+        this.powerfulAttackTimer = 2.0; // 2 seconds delay
+        this.triggerPowerfulAttack = false;
+        if (this.sprite) {
+            this.sprite.material.color.setHex(0xff0000);
+        }
     }
 
     update(delta) {
         if (this.attackCooldown > 0) {
             this.attackCooldown -= delta;
+        }
+
+        // Boss Special Attack Logic
+        if (this.preparingPowerfulAttack) {
+            this.powerfulAttackTimer -= delta;
+            if (this.sprite) {
+                this.sprite.material.color.setHex(0xff0000); // Glow red
+            }
+            if (this.powerfulAttackTimer <= 0) {
+                this.preparingPowerfulAttack = false;
+                if (this.sprite) {
+                    this.sprite.material.color.setHex(0xffffff); // Reset color
+                }
+                // The actual damage application remains in main.js or a separate method
+                // We'll signal main.js that the attack is ready to trigger
+                this.triggerPowerfulAttack = true;
+            }
+            this.updateBox();
+            return; // Don't move or do anything else while preparing
         }
 
         if (this.animationTimer > 0) {
@@ -128,7 +163,8 @@ export class Monster {
                 if (this.sprite && this.textures.idle) {
                     this.sprite.material.map = this.textures.idle;
                     this.sprite.material.needsUpdate = true;
-                    this.sprite.scale.set(0.8, 0.8, 1); // Reset scale
+                    this.sprite.scale.set(this.scale, this.scale, 1); // Use config scale
+                    this.sprite.material.color.setHex(0xffffff); // Ensure reset
                 }
             }
         }
