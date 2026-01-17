@@ -142,5 +142,33 @@ export const LOOT_CONFIG = {
             chance: 0.05,
             item: ITEMS.healing_potion
         }
+    ],
+    skeletal_boss: [
+        {
+            type: 'gold',
+            chance: 1.0,
+            min: 500,
+            max: 1000
+        },
+        {
+            type: 'item',
+            chance: 0.5,
+            item: ITEMS.superior_sword
+        },
+        {
+            type: 'item',
+            chance: 0.4,
+            item: ITEMS.iron_plate
+        },
+        {
+            type: 'item',
+            chance: 1.0,
+            item: ITEMS.healing_potion
+        },
+        {
+            type: 'item',
+            chance: 1.0,
+            item: ITEMS.strength_potion
+        }
     ]
 };
