@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 
 export class Dungeon {
-    constructor(mapString) {
+    constructor(mapString, levelIndex = 1) {
         this.map = mapString.trim().split('\n');
+        this.levelIndex = levelIndex;
         this.group = new THREE.Group();
         this.startPosition = new THREE.Vector3(0, 0, 0);
         this.walls = []; // Store wall bounding boxes for collision
@@ -16,13 +17,24 @@ export class Dungeon {
     generate() {
         const loader = new THREE.TextureLoader();
 
+        // Biome / Theme Selection
+        let floorPath = '/cobblestone.png';
+        let wallPath = '/stone_bricks.png';
+        let ceilingColor = 0x202020;
+
+        if (this.levelIndex >= 12) {
+            floorPath = '/ancient_floor.png';
+            wallPath = '/ancient_wall.png';
+            ceilingColor = 0x101015; // Darker void-like ceiling
+        }
+
         // Load textures
-        const floorTexture = loader.load('/cobblestone.png');
+        const floorTexture = loader.load(floorPath);
         floorTexture.wrapS = THREE.RepeatWrapping;
         floorTexture.wrapT = THREE.RepeatWrapping;
         floorTexture.repeat.set(1, 1);
 
-        const wallTexture = loader.load('/stone_bricks.png');
+        const wallTexture = loader.load(wallPath);
         wallTexture.wrapS = THREE.RepeatWrapping;
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.repeat.set(1, 2); // 2 units high
@@ -30,7 +42,7 @@ export class Dungeon {
         // Materials
         const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture });
         const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
-        const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x202020 }); // Dark ceiling
+        const ceilingMaterial = new THREE.MeshStandardMaterial({ color: ceilingColor }); // Dynamic ceiling color
         const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown for door
 
         const geometry = new THREE.BoxGeometry(1, 2, 1); // Wall is 2 units high

@@ -204,8 +204,16 @@ function loadLevel(levelIndex) {
     loots = [];
 
     // Create new dungeon
-    dungeon = new Dungeon(mapContent);
+    dungeon = new Dungeon(mapContent, levelIndex);
     scene.add(dungeon.getMesh());
+
+    // Update Ambient Lighting and Fog for deeper levels
+    let nextFogColor = 0x101010;
+    if (levelIndex >= 12) {
+        nextFogColor = 0x050510; // Deeper blue/black for ancient halls
+    }
+    scene.fog.color.setHex(nextFogColor);
+    scene.background.setHex(nextFogColor);
 
     // Update player
     player.dungeon = dungeon;
