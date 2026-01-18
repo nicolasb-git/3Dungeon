@@ -359,21 +359,22 @@ function renderVendorInventories() {
     Object.values(ITEMS).forEach(item => {
         const itemDiv = document.createElement('div');
         itemDiv.className = 'vendor-item';
+        const cost = player.isGodMode ? 0 : item.price;
         itemDiv.innerHTML = `
             <img src="${item.icon}" alt="${item.name}">
             <div class="item-name">${item.name}</div>
-            <div class="item-price">${item.price} G</div>
+            <div class="item-price">${cost} G ${player.isGodMode ? '(FREE)' : ''}</div>
         `;
         itemDiv.onclick = (event) => {
             event.stopPropagation();
-            if (player.gold >= item.price) {
+            if (player.gold >= cost) {
                 const newItem = createItem(item);
                 if (newItem && player.addItem(newItem)) {
-                    player.gold -= item.price;
+                    player.gold -= cost;
                     player._hideTooltip();
                     updateHUD();
                     renderVendorInventories();
-                    addLog(`Bought ${item.name} for ${item.price} gold.`);
+                    addLog(`Bought ${item.name} for ${cost} gold${player.isGodMode ? ' (Cheater!)' : ''}.`);
                 } else if (!newItem) {
                     addLog("Error creating item!");
                 } else {

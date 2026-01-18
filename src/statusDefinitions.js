@@ -8,6 +8,8 @@ export const STATUSES = {
         tickInterval: 10,
         description: (player) => `Loses 2% current HP every 10s.`,
         onTick: (player, logger) => {
+            if (player.isGodMode) return; // Immune to plague in God Mode
+
             const damage = Math.ceil(player.hp * 0.02);
             player.hp = Math.max(0, player.hp - damage);
             player.updateUI();
