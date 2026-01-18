@@ -62,8 +62,9 @@ export class Monster {
                 const r = data[i];
                 const g = data[i + 1];
                 const b = data[i + 2];
-                // If green is the prominent color, make it transparent
-                if (g > 70 && g > r && g > b) {
+                // Chroma key: Target pure-ish bright green backgrounds
+                // Avoids transparency on slightly green monster skin
+                if (g > 150 && g > r * 1.4 && g > b * 1.4) {
                     data[i + 3] = 0;
                 }
             }
