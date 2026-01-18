@@ -18,6 +18,9 @@
     <div id="low-hp-glow"></div>
     <div id="damage-numbers"></div>
     <div id="floor-indicator">FLOOR: <span id="floor-val">1</span></div>
+    <div id="minimap-container">
+      <canvas id="minimap-canvas" width="150" height="150"></canvas>
+    </div>
     <button id="sound-toggle" title="Toggle Sound">🔊</button>
     <div id="game-over" class="overlay">
       <h1>GAME OVER</h1>
@@ -42,6 +45,14 @@
         </div>
       </div>
       <button id="close-vendor">Return to Dungeon</button>
+    </div>
+
+    <div id="full-map-overlay" class="overlay">
+      <h1>CHARTED PATHS</h1>
+      <div id="full-map-container">
+        <canvas id="full-map-canvas" width="600" height="600"></canvas>
+      </div>
+      <p>Hit 'M' to return</p>
     </div>
   </div>
   <div id="hud">

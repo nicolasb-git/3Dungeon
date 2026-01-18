@@ -33,6 +33,33 @@ html {
   pointer-events: none;
 }
 
+#minimap-container {
+  position: absolute;
+  top: 70px;
+  right: 15px;
+  width: 140px;
+  height: 140px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(139, 0, 0, 0.3);
+  border-radius: 10px;
+  z-index: 20;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(139, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#minimap-canvas {
+  image-rendering: pixelated;
+  width: 130px;
+  height: 130px;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.1));
+}
+
 #sound-toggle {
   position: absolute;
   top: 15px;
@@ -596,6 +623,21 @@ html {
 #close-vendor:hover {
   background: #e74c3c;
   box-shadow: 0 0 20px #e74c3c;
+}
+
+#full-map-container {
+  background: rgba(0, 0, 0, 0.6);
+  border: 3px solid rgba(0, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+#full-map-canvas {
+  image-rendering: pixelated;
+  max-width: 80vh;
+  max-height: 80vh;
 }
 
 #tooltip {

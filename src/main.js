@@ -217,6 +217,7 @@ function loadLevel(levelIndex) {
 
     // Update player
     player.dungeon = dungeon;
+    player.discoveredTiles.clear(); // Clear map for new level
     const startPos = dungeon.getStartPosition();
     camera.position.copy(startPos);
 
@@ -237,8 +238,8 @@ function loadLevel(levelIndex) {
 
             // Decide type (Weighted Random)
             const available = Object.entries(MONSTERS)
-                .filter(([_, config]) => levelIndex >= (config.startLevel || 1))
-                .map(([id, config]) => ({ id, weight: config.spawnWeight || 1 }));
+                .filter(([_, config]) => levelIndex >= (config.startLevel || 1) && (config.spawnWeight !== 0))
+                .map(([id, config]) => ({ id, weight: config.spawnWeight ?? 1 }));
 
             const totalWeight = available.reduce((sum, item) => sum + item.weight, 0);
             let random = Math.random() * totalWeight;
@@ -266,8 +267,8 @@ function loadLevel(levelIndex) {
         }
     }
 
-    // Spawn Boss if map has one
-    if (bossSpawn) {
+    // Spawn Boss if map has one (Level 11: Lord of Rattles)
+    if (bossSpawn && levelIndex === 11) {
         const boss = new Monster(scene, bossSpawn, 'skeletal_boss');
         monsters.push(boss);
         addLog("A TERRIFYING presence fills the air... The Lord of Rattles has appeared!");
@@ -603,14 +604,17 @@ function animate() {
                         }
                     } else {
                         // Move towards player (persistent even if LOS is lost)
-                        m.moveTowards(playerPos, delta, dungeon.getWalls());
+                        m.moveTowards(camera.position, delta, dungeon.getWalls());
                     }
                 }
             }
         });
+    }
 
-        player.update(delta, monsters);
+    // Always update player (for status effects and map rendering)
+    player.update(delta, monsters);
 
+    if (player.isLocked) {
         // Update Cooldown UI
         if (cooldownOverlay) {
             const percent = (player.attackCooldown / player.maxAttackCooldown) * 100;

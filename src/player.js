@@ -15,6 +15,7 @@ export class Player {
         this.isLocked = false;
         this.speed = 5.0; // Movement speed
         this.isGodMode = false;
+        this.isMapOpen = false;
 
         // Initialize stats from character class
         this.hp = characterClass.hp;
@@ -63,6 +64,7 @@ export class Player {
 
         this.statuses = [];
         this.logger = null; // Callback for addLog
+        this.discoveredTiles = new Set(); // Stores "x,z" strings
         this._initListeners(domElement);
     }
 
@@ -81,7 +83,28 @@ export class Player {
         this.moveRight = false;
 
         const onKeyDown = (event) => {
-            switch (event.code) {
+            const key = event.key ? event.key.toLowerCase() : '';
+            const code = event.code;
+
+            // Debug detection
+            if (key === 'm' || code === 'KeyM') {
+                if (this.logger) this.logger("M Input Detected!");
+                this.toggleMap();
+                event.preventDefault();
+                event.stopPropagation();
+                return;
+            }
+
+            if (key === 'g' || code === 'KeyG') {
+                this.isGodMode = !this.isGodMode;
+                if (this.logger) this.logger(this.isGodMode ? "God Mode: ON" : "God Mode: OFF");
+                this.updateUI();
+                event.preventDefault();
+                event.stopPropagation();
+                return;
+            }
+
+            switch (code) {
                 case 'ArrowUp':
                 case 'KeyW':
                     this.moveForward = true;
@@ -98,13 +121,8 @@ export class Player {
                 case 'KeyD':
                     this.moveRight = true;
                     break;
-                case 'KeyG':
-                    this.isGodMode = !this.isGodMode;
-                    this.updateUI();
-                    break;
             }
         };
-
         const onKeyUp = (event) => {
             switch (event.code) {
                 case 'ArrowUp':
@@ -126,8 +144,8 @@ export class Player {
             }
         };
 
-        document.addEventListener('keydown', onKeyDown);
-        document.addEventListener('keyup', onKeyUp);
+        window.addEventListener('keydown', onKeyDown, true);
+        window.addEventListener('keyup', onKeyUp, true);
     }
 
     takeDamage(amount) {
@@ -661,6 +679,36 @@ export class Player {
             }
         }
 
+        // Discovery & Map UI Logic - Runs even when unlocked (with Line of Sight)
+        if (this.dungeon && this.dungeon.map) {
+            const map = this.dungeon.map;
+            const px = this.camera.position.x;
+            const pz = this.camera.position.z;
+            const gridX = Math.round(px);
+            const gridZ = Math.round(pz);
+
+            const radius = 5;
+            for (let oz = -radius; oz <= radius; oz++) {
+                for (let ox = -radius; ox <= radius; ox++) {
+                    const tx = gridX + ox;
+                    const tz = gridZ + oz;
+
+                    if (tx < 0 || tz < 0 || tz >= map.length || tx >= map[tz]?.length) continue;
+                    if (this.discoveredTiles.has(`${tx},${tz}`)) continue;
+
+                    // Simple LOS check
+                    if (this._hasLOS(gridX, gridZ, tx, tz, map)) {
+                        this.discoveredTiles.add(`${tx},${tz}`);
+                    }
+                }
+            }
+        }
+
+        this.updateMinimap();
+        if (this.isMapOpen) {
+            this.renderFullMap();
+        }
+
         if (!this.isLocked) return;
 
         this.velocity.x -= this.velocity.x * 10.0 * delta;
@@ -791,5 +839,156 @@ export class Player {
                 hud.classList.remove('low-hp');
             }
         }
+    }
+
+    updateMinimap() {
+        const canvas = document.getElementById('minimap-canvas');
+        if (!canvas || !this.dungeon) return;
+        const ctx = canvas.getContext('2d');
+        const map = this.dungeon.map;
+        if (!map || !map.length) return;
+
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
+
+        const zoom = 8; // Pixels per tile
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        // Draw discovered tiles
+        this.discoveredTiles.forEach(key => {
+            const parts = key.split(',');
+            const tx = parseInt(parts[0]);
+            const tz = parseInt(parts[1]);
+
+            // Check if within bounds of the map array
+            if (tz >= 0 && tz < map.length && tx >= 0 && tx < map[tz].length) {
+                const char = map[tz][tx];
+
+                const dx = centerX + (tx - this.camera.position.x) * zoom;
+                const dy = centerY + (tz - this.camera.position.z) * zoom;
+
+                // Only draw if within vicinity (phantom circle)
+                const distToCenter = Math.sqrt(Math.pow(dx - centerX, 2) + Math.pow(dy - centerY, 2));
+                if (distToCenter < width / 2 - 2) {
+                    if (char === '*') {
+                        ctx.fillStyle = 'rgba(180, 180, 200, 0.5)'; // Ghostly Wall
+                    } else if (char === 'O' || char === '0' || char === 'B') {
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Special points
+                    } else {
+                        ctx.fillStyle = 'rgba(80, 80, 100, 0.4)'; // Explored Floor
+                    }
+                    ctx.fillRect(dx - zoom / 2, dy - zoom / 2, zoom, zoom);
+                }
+            }
+        });
+
+        // Draw Player Marker (Glowing phantom)
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#00ffff';
+        ctx.fillStyle = '#00ffff';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    toggleMap() {
+        if (this.logger) this.logger(`DEBUG: toggleMap called. Current state: ${this.isMapOpen}`);
+        this.isMapOpen = !this.isMapOpen;
+        const overlay = document.getElementById('full-map-overlay');
+        const instructions = document.getElementById('instructions');
+
+        if (!overlay && this.logger) this.logger("ERROR: full-map-overlay not found!");
+
+        if (overlay) {
+            overlay.style.display = this.isMapOpen ? 'flex' : 'none';
+            if (this.isMapOpen) {
+                if (this.logger) this.logger("Rendering Map Overlay...");
+                this.renderFullMap();
+                if (this.controls.isLocked) this.controls.unlock();
+                // Ensure instructions don't block the map
+                if (instructions) instructions.style.display = 'none';
+                // Double check after a frame because the lock/unlock event listener in main.js
+                // might trigger right after this and show them again.
+                setTimeout(() => {
+                    if (this.isMapOpen && instructions) instructions.style.display = 'none';
+                }, 10);
+            } else {
+                if (!this.controls.isLocked) this.controls.lock();
+            }
+        }
+    }
+
+    renderFullMap() {
+        const canvas = document.getElementById('full-map-canvas');
+        if (!canvas || !this.dungeon) return;
+        const ctx = canvas.getContext('2d');
+        const map = this.dungeon.map;
+        if (!map || !map.length) return;
+
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
+
+        // Find map dimensions
+        const mapHeight = map.length;
+        const mapWidth = Math.max(...map.map(row => row.length));
+
+        // Calculate scale to fit
+        const scale = Math.min(width / mapWidth, height / mapHeight);
+        const offsetX = (width - mapWidth * scale) / 2;
+        const offsetY = (height - mapHeight * scale) / 2;
+
+        // Draw map (Only Discovered)
+        map.forEach((row, z) => {
+            [...row].forEach((char, x) => {
+                if (!this.discoveredTiles.has(`${x},${z}`)) return;
+
+                const dx = offsetX + x * scale;
+                const dy = offsetY + z * scale;
+
+                if (char === '*') {
+                    ctx.fillStyle = '#444'; // Wall
+                } else if (char === 'O' || char === '0' || char === 'B') {
+                    ctx.fillStyle = '#f1c40f'; // Special
+                } else if (char === 'X') {
+                    ctx.fillStyle = '#27ae60'; // Start
+                } else {
+                    ctx.fillStyle = '#222'; // Floor
+                }
+                ctx.fillRect(dx, dy, scale - 1, scale - 1);
+            });
+        });
+
+        // Draw Player Position
+        const gridX = this.camera.position.x;
+        const gridZ = this.camera.position.z;
+        const px = offsetX + gridX * scale;
+        const pz = offsetY + gridZ * scale;
+
+        ctx.fillStyle = '#00ffff';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#00ffff';
+        ctx.beginPath();
+        ctx.arc(px, pz, Math.max(2, scale / 3), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    _hasLOS(x0, z0, x1, z1, map) {
+        const dist = Math.sqrt((x1 - x0) ** 2 + (z1 - z0) ** 2);
+        if (dist === 0) return true;
+        const steps = Math.ceil(dist * 2);
+        for (let i = 1; i < steps; i++) {
+            const tx = Math.round(x0 + (x1 - x0) * (i / steps));
+            const tz = Math.round(z0 + (z1 - z0) * (i / steps));
+            if (tx === x1 && tz === z1) return true;
+            if (map[tz] && map[tz][tx] === '*') {
+                return false; // Path blocked by wall
+            }
+        }
+        return true;
     }
 }
