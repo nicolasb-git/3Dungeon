@@ -80,5 +80,38 @@ export const MONSTERS = {
             idle: '/lord_rattles_idle.png',
             attack: '/lord_rattles_attack.png'
         }
+    },
+    snake: {
+        id: 'snake',
+        name: "Emerald Seraph",
+        hp: 25,
+        def: 0,
+        attackDamage: { min: 4, max: 7 },
+        maxAttackCooldown: 0.5,
+        walkingSpeed: 2.2,
+        startLevel: 12,
+        spawnWeight: 15,
+        scale: 0.5,
+        poisonChance: 0.2,
+        texturePaths: {
+            idle: '/snake_idle.png',
+            attack: '/snake_attack.png'
+        }
+    },
+    zombie: {
+        id: 'zombie',
+        name: "Restless Shambler",
+        hp: 120,
+        def: 5,
+        attackDamage: { min: 12, max: 18 },
+        maxAttackCooldown: 2.5,
+        walkingSpeed: 0.4,
+        startLevel: 12,
+        spawnWeight: 8,
+        scale: 0.9,
+        texturePaths: {
+            idle: '/zombie_idle.png',
+            attack: '/zombie_attack.png'
+        }
     }
 };

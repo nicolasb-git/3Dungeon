@@ -21,6 +21,27 @@ export const STATUSES = {
             }
         }
     },
+    poison: {
+        id: 'poison',
+        name: 'Poison',
+        type: 'debuff',
+        icon: '/poison_icon.png',
+        duration: 60,
+        tickInterval: 5,
+        description: (player) => `Loses 3% HP every 5s.`,
+        onTick: (player, logger) => {
+            if (player.isGodMode) return;
+            const damage = Math.ceil(player.maxHp * 0.03);
+            player.hp = Math.max(0, player.hp - damage);
+            player.updateUI();
+            if (logger) {
+                logger(`The poison burns in your veins... (-${damage} HP)`);
+                if (player.hp <= 0) {
+                    logger("The poison was too strong.");
+                }
+            }
+        }
+    },
     // Example of a buff we could add later
     strength: {
         id: 'strength',

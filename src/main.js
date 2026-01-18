@@ -592,6 +592,12 @@ function animate() {
                                     addLog("You have been infected with the Plague!");
                                 }
 
+                                // Apply poison if monster has the chance
+                                if (monsterConfig && monsterConfig.poisonChance && Math.random() < monsterConfig.poisonChance) {
+                                    player.applyStatus(STATUSES.poison);
+                                    addLog("You have been poisoned!");
+                                }
+
                                 m.attackCooldown = m.maxAttackCooldown;
                             }
                         }

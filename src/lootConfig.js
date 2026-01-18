@@ -128,6 +128,11 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.15,
             item: ITEMS.strength_potion
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.cleanse_potion
         }
     ],
     rat: [
@@ -169,6 +174,47 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 1.0,
             item: ITEMS.strength_potion
+        }
+    ],
+    snake: [
+        {
+            type: 'gold',
+            chance: 0.6,
+            min: 15,
+            max: 30
+        },
+        {
+            type: 'item',
+            chance: 0.15,
+            item: ITEMS.healing_potion
+        }
+    ],
+    zombie: [
+        {
+            type: 'gold',
+            chance: 0.8,
+            min: 40,
+            max: 90
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.iron_shield
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.iron_helmet
+        },
+        {
+            type: 'item',
+            chance: 0.25,
+            item: ITEMS.healing_potion
+        },
+        {
+            type: 'item',
+            chance: 0.10,
+            item: ITEMS.cleanse_potion
         }
     ]
 };

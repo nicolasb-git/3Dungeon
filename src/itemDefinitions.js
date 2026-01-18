@@ -41,8 +41,17 @@ export const ITEMS = {
         itemClass: 'Potion',
         type: 'consumable',
         statusId: 'strength',
-        price: 75,
+        price: 30,
         icon: '/strength_potion.png'
+    },
+    cleanse_potion: {
+        id: 'cleanse_potion',
+        name: 'Cleanse Potion',
+        type: 'consumable',
+        itemClass: 'Potion',
+        cleanses: true,
+        price: 45,
+        icon: '/cleanse_potion.png'
     },
     basic_sword: {
         id: 'basic_sword',

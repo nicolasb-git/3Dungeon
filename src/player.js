@@ -185,6 +185,17 @@ export class Player {
                 this.updateUI();
                 return { success: true, message: `Used ${item.name} and gained ${STATUSES[item.statusId].name}` };
             }
+            if (item.cleanses) {
+                const affected = this.statuses.some(s => s.id === 'plague' || s.id === 'poison');
+                if (!affected) {
+                    return { success: false, message: "You are not afflicted by any toxins." };
+                }
+                this.statuses = this.statuses.filter(s => s.id !== 'plague' && s.id !== 'poison');
+                this.inventory.splice(index, 1);
+                this._hideTooltip();
+                this.updateUI();
+                return { success: true, message: `Used ${item.name} and cleansed all toxins!` };
+            }
         }
         return { success: false };
     }

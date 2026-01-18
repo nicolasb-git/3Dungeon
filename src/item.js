@@ -20,6 +20,7 @@ export class Potion extends Item {
         super(name, 'consumable', icon, price);
         this.healAmount = options.healAmount || 0;
         this.statusId = options.statusId || null;
+        this.cleanses = options.cleanses || false;
         this.itemClass = 'Potion';
     }
 }
@@ -34,7 +35,8 @@ export function createItem(data) {
         const type = data.type || 'consumable';
         return new Potion(data.name, data.icon, data.price, {
             healAmount: data.healAmount,
-            statusId: data.statusId
+            statusId: data.statusId,
+            cleanses: data.cleanses
         });
     } else if (data.itemClass === 'Weapon') {
         return new Weapon(data.name, data.minDamage, data.maxDamage, data.cooldown, data.icon, data.price);
