@@ -646,6 +646,40 @@ export class Player {
     }
 
     update(delta, monsters = []) {
+        // Discovery & Map UI Logic - Runs even when unlocked (with Line of Sight)
+        if (this.dungeon && this.dungeon.map) {
+            const map = this.dungeon.map;
+            const px = this.camera.position.x;
+            const pz = this.camera.position.z;
+            const gridX = Math.round(px);
+            const gridZ = Math.round(pz);
+
+            const radius = 5;
+            for (let oz = -radius; oz <= radius; oz++) {
+                for (let ox = -radius; ox <= radius; ox++) {
+                    const tx = gridX + ox;
+                    const tz = gridZ + oz;
+
+                    if (tx < 0 || tz < 0 || tz >= map.length || tx >= map[tz]?.length) continue;
+                    if (this.discoveredTiles.has(`${tx},${tz}`)) continue;
+
+                    // Simple LOS check
+                    if (this._hasLOS(gridX, gridZ, tx, tz, map)) {
+                        this.discoveredTiles.add(`${tx},${tz}`);
+                    }
+                }
+            }
+        }
+
+        this.updateMinimap();
+        if (this.isMapOpen) {
+            this.renderFullMap();
+        }
+
+        if (!this.isLocked) return;
+
+        // --- GAMEPLAY UPDATE (Only when active) ---
+
         // Update Cooldown
         if (this.attackCooldown > 0) {
             this.attackCooldown -= delta;
@@ -678,38 +712,6 @@ export class Player {
                 this.updateUI();
             }
         }
-
-        // Discovery & Map UI Logic - Runs even when unlocked (with Line of Sight)
-        if (this.dungeon && this.dungeon.map) {
-            const map = this.dungeon.map;
-            const px = this.camera.position.x;
-            const pz = this.camera.position.z;
-            const gridX = Math.round(px);
-            const gridZ = Math.round(pz);
-
-            const radius = 5;
-            for (let oz = -radius; oz <= radius; oz++) {
-                for (let ox = -radius; ox <= radius; ox++) {
-                    const tx = gridX + ox;
-                    const tz = gridZ + oz;
-
-                    if (tx < 0 || tz < 0 || tz >= map.length || tx >= map[tz]?.length) continue;
-                    if (this.discoveredTiles.has(`${tx},${tz}`)) continue;
-
-                    // Simple LOS check
-                    if (this._hasLOS(gridX, gridZ, tx, tz, map)) {
-                        this.discoveredTiles.add(`${tx},${tz}`);
-                    }
-                }
-            }
-        }
-
-        this.updateMinimap();
-        if (this.isMapOpen) {
-            this.renderFullMap();
-        }
-
-        if (!this.isLocked) return;
 
         this.velocity.x -= this.velocity.x * 10.0 * delta;
         this.velocity.z -= this.velocity.z * 10.0 * delta;
