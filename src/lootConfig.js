@@ -4,7 +4,7 @@ export const LOOT_CONFIG = {
     shadow: [
         {
             type: 'gold',
-            chance: 0.7,
+            chance: 0.8,
             min: 10,
             max: 20
         },
@@ -27,12 +27,22 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.strength_potion
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.leather_boots
+        },
+        {
+            type: 'item',
+            chance: 0.07,
+            item: ITEMS.leather_shoulder
         }
     ],
     skeleton: [
         {
             type: 'gold',
-            chance: 0.5,
+            chance: 0.7,
             min: 20,
             max: 40
         },
@@ -85,6 +95,16 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.08,
             item: ITEMS.strength_potion
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.iron_boots
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.iron_shoulder
         }
     ],
     knight_skeleton: [
@@ -133,6 +153,16 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.05,
             item: ITEMS.cleanse_potion
+        },
+        {
+            type: 'item',
+            chance: 0.15,
+            item: ITEMS.iron_boots
+        },
+        {
+            type: 'item',
+            chance: 0.12,
+            item: ITEMS.iron_shoulder
         }
     ],
     rat: [
@@ -215,6 +245,16 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.10,
             item: ITEMS.cleanse_potion
+        },
+        {
+            type: 'item',
+            chance: 0.12,
+            item: ITEMS.leather_boots
+        },
+        {
+            type: 'item',
+            chance: 0.09,
+            item: ITEMS.leather_shoulder
         }
     ]
 };

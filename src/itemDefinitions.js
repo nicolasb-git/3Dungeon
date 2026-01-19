@@ -109,14 +109,40 @@ export const ITEMS = {
         price: 150,
         icon: '/iron_greaves_icon.png'
     },
-    basic_sword: {
-        id: 'basic_sword',
-        name: 'Basic Sword',
-        itemClass: 'Weapon',
-        minDamage: 2,
-        maxDamage: 4,
-        cooldown: 0.5,
-        price: 0,
-        icon: '/sword_icon.png'
+    leather_shoulder: {
+        id: 'leather_shoulder',
+        name: 'Leather Shoulder',
+        itemClass: 'Armor',
+        itemType: 'shoulder',
+        defense: 2,
+        price: 35,
+        icon: '/leather_shoulder_icon.png'
+    },
+    iron_shoulder: {
+        id: 'iron_shoulder',
+        name: 'Iron Shoulder',
+        itemClass: 'Armor',
+        itemType: 'shoulder',
+        defense: 4,
+        price: 160,
+        icon: '/iron_shoulder_icon.png'
+    },
+    leather_boots: {
+        id: 'leather_boots',
+        name: 'Leather Boots',
+        itemClass: 'Armor',
+        itemType: 'boots',
+        defense: 2,
+        price: 40,
+        icon: '/leather_boots_icon.png'
+    },
+    iron_boots: {
+        id: 'iron_boots',
+        name: 'Iron Boots',
+        itemClass: 'Armor',
+        itemType: 'boots',
+        defense: 4,
+        price: 180,
+        icon: '/iron_boots_icon.png'
     }
 };

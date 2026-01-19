@@ -36,6 +36,7 @@ export class Player {
             torso: null,
             legs: null,
             boots: null,
+            shoulder: null,
             'l-hand': null,
             'r-hand': characterClass.weapon // Warrior starts with weapon in right hand
         };
@@ -1012,6 +1013,7 @@ export class Player {
                 torso: this.equipment.torso?.itemId || null,
                 legs: this.equipment.legs?.itemId || null,
                 boots: this.equipment.boots?.itemId || null,
+                shoulder: this.equipment.shoulder?.itemId || null,
                 'l-hand': this.equipment['l-hand']?.itemId || null,
                 'r-hand': this.equipment['r-hand']?.itemId || null
             }

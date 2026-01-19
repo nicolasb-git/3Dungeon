@@ -132,7 +132,7 @@ function setupRespawnButton() {
     const respawnBtn = document.getElementById('respawn-btn');
 
     if (saveData && respawnBtn) {
-        const cost = saveData.level * 50;
+        const cost = saveData.level * 25;
         respawnBtn.style.display = 'block';
         respawnBtn.innerHTML = `Respawn (${cost} G)`;
 

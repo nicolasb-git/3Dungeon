@@ -607,6 +607,8 @@ html {
   font-size: 12px;
   font-weight: bold;
   text-align: center;
+  max-width: 100%;
+  word-wrap: break-word;
 }
 
 .vendor-item .item-price {
