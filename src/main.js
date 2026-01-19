@@ -148,6 +148,7 @@ function setupRespawnButton() {
 
                 loadLevel(currentLevel);
                 document.getElementById('game-over').style.display = 'none';
+                document.getElementById('victory').style.display = 'none';
                 addLog(`The gods demand payment... You paid ${cost} G to cheat death!`);
                 addLog(`Respawning on Floor ${currentLevel}...`);
             };
@@ -163,6 +164,18 @@ function setupRespawnButton() {
 }
 
 setupRespawnButton();
+
+// New Game Logic (Clear Save)
+const newGameBtn = document.getElementById('new-game-btn');
+const playAgainBtn = document.getElementById('play-again-btn');
+
+const startNewGame = () => {
+    localStorage.removeItem('dungeon_save');
+    location.reload();
+};
+
+if (newGameBtn) newGameBtn.addEventListener('click', startNewGame);
+if (playAgainBtn) playAgainBtn.addEventListener('click', startNewGame);
 
 document.getElementById('floor-val').textContent = currentLevel;
 player.updateUI();
@@ -222,15 +235,34 @@ validateAssets();
 
 function loadLevel(levelIndex) {
     // Find map file
-    const mapPath = `./maps/${levelIndex}.txt`;
-    const mapContent = maps[mapPath];
+    const variations = [
+        `./maps/${levelIndex}.txt`,
+        `maps/${levelIndex}.txt`,
+        `/src/maps/${levelIndex}.txt`
+    ];
+
+    let mapContent = null;
+    let foundPath = "";
+
+    for (const path of variations) {
+        if (maps[path]) {
+            mapContent = maps[path];
+            foundPath = path;
+            break;
+        }
+    }
 
     if (!mapContent) {
-        console.log("No more levels or map not found: " + mapPath);
+        console.error("DEBUG: Failed to load map for Level", levelIndex);
+        console.log("Tried variations:", variations);
+        console.log("Available map keys:", Object.keys(maps));
+
         document.getElementById('victory').style.display = 'flex';
         player.controls.unlock();
         return;
     }
+
+    console.log(`Loading Level ${levelIndex} from ${foundPath}`);
 
     // Cleanup old dungeon and monsters
     if (dungeon) {
