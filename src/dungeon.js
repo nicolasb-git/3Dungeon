@@ -20,12 +20,10 @@ export class Dungeon {
         // Biome / Theme Selection
         let floorPath = '/cobblestone.png';
         let wallPath = '/stone_bricks.png';
-        let ceilingColor = 0x202020;
 
         if (this.levelIndex >= 12) {
             floorPath = '/ancient_floor.png';
             wallPath = '/ancient_wall.png';
-            ceilingColor = 0x101015; // Darker void-like ceiling
         }
 
         // Load textures
@@ -42,7 +40,7 @@ export class Dungeon {
         // Materials
         const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture });
         const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
-        const ceilingMaterial = new THREE.MeshStandardMaterial({ color: ceilingColor }); // Dynamic ceiling color
+        const ceilingMaterial = new THREE.MeshStandardMaterial({ map: floorTexture }); // Same as floor texture
         const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown for door
 
         const geometry = new THREE.BoxGeometry(1, 2, 1); // Wall is 2 units high
