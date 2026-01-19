@@ -710,3 +710,9 @@ html {
   color: #f1c40f;
   font-weight: bold;
 }
+
+.button-row {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}

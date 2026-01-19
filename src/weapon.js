@@ -17,5 +17,6 @@ export class Weapon extends Item {
 export class BasicSword extends Weapon {
     constructor() {
         super('Basic Sword', 2, 4, 0.5, '/sword_icon.png');
+        this.itemId = 'basic_sword';
     }
 }

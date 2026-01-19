@@ -108,5 +108,15 @@ export const ITEMS = {
         defense: 5,
         price: 150,
         icon: '/iron_greaves_icon.png'
+    },
+    basic_sword: {
+        id: 'basic_sword',
+        name: 'Basic Sword',
+        itemClass: 'Weapon',
+        minDamage: 2,
+        maxDamage: 4,
+        cooldown: 0.5,
+        price: 0,
+        icon: '/sword_icon.png'
     }
 };

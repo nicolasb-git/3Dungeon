@@ -993,4 +993,52 @@ export class Player {
         }
         return true;
     }
+
+    getSaveData(levelIndex) {
+        return {
+            level: levelIndex,
+            hp: this.hp,
+            maxHp: this.maxHp,
+            str: this.str,
+            def: this.def,
+            gold: this.gold,
+            xp: this.xp,
+            xpToNextLevel: this.xpToNextLevel,
+            playerLevel: this.level,
+            charClassName: this.charClass.name,
+            inventory: this.inventory.map(item => item?.itemId).filter(id => id),
+            equipment: {
+                head: this.equipment.head?.itemId || null,
+                torso: this.equipment.torso?.itemId || null,
+                legs: this.equipment.legs?.itemId || null,
+                boots: this.equipment.boots?.itemId || null,
+                'l-hand': this.equipment['l-hand']?.itemId || null,
+                'r-hand': this.equipment['r-hand']?.itemId || null
+            }
+        };
+    }
+
+    loadSaveData(data, ITEMS, createItem) {
+        if (!data) return;
+
+        this.hp = data.hp;
+        this.maxHp = data.maxHp;
+        this.str = data.str;
+        this.def = data.def;
+        this.gold = data.gold;
+        this.xp = data.xp;
+        this.xpToNextLevel = data.xpToNextLevel;
+        this.level = data.playerLevel;
+
+        // Restore Inventory
+        this.inventory = data.inventory.map(id => createItem(ITEMS[id])).filter(item => item);
+
+        // Restore Equipment
+        for (const slot in data.equipment) {
+            const id = data.equipment[slot];
+            this.equipment[slot] = id ? createItem(ITEMS[id]) : null;
+        }
+
+        this.updateUI();
+    }
 }

@@ -126,6 +126,44 @@ function triggerBloodFlash() {
 const warrior = new Warrior();
 const player = new Player(camera, document.getElementById('game-container'), warrior);
 player.logger = addLog;
+
+function setupRespawnButton() {
+    const saveData = JSON.parse(localStorage.getItem('dungeon_save'));
+    const respawnBtn = document.getElementById('respawn-btn');
+
+    if (saveData && respawnBtn) {
+        const cost = saveData.level * 50;
+        respawnBtn.style.display = 'block';
+        respawnBtn.innerHTML = `Respawn (${cost} G)`;
+
+        if (saveData.gold >= cost) {
+            respawnBtn.disabled = false;
+            respawnBtn.style.opacity = "1";
+            respawnBtn.onclick = () => {
+                currentLevel = saveData.level;
+                player.loadSaveData(saveData, ITEMS, createItem);
+                player.gold -= cost; // Deduct the cost
+                player.hp = player.maxHp; // Restore full HP
+                player.updateUI();
+
+                loadLevel(currentLevel);
+                document.getElementById('game-over').style.display = 'none';
+                addLog(`The gods demand payment... You paid ${cost} G to cheat death!`);
+                addLog(`Respawning on Floor ${currentLevel}...`);
+            };
+        } else {
+            respawnBtn.disabled = true;
+            respawnBtn.style.opacity = "0.5";
+            respawnBtn.title = "Not enough gold to respawn!";
+            respawnBtn.onclick = null;
+        }
+    } else if (respawnBtn) {
+        respawnBtn.style.display = 'none';
+    }
+}
+
+setupRespawnButton();
+
 document.getElementById('floor-val').textContent = currentLevel;
 player.updateUI();
 
@@ -525,6 +563,10 @@ function animate() {
 
     if (player.hp <= 0) {
         document.getElementById('game-over').style.display = 'flex';
+
+        // Show respawn button if save exists
+        setupRespawnButton();
+
         player.controls.unlock();
         renderer.render(scene, camera);
         return;
@@ -696,6 +738,16 @@ function animate() {
         if ((exitTrigger && exitTrigger.containsPoint(playerPos)) ||
             (bossExitTrigger && bossExitMesh && bossExitMesh.visible && bossExitTrigger.containsPoint(playerPos))) {
             currentLevel++;
+
+            // SAVE SYSTEM: Save progress for the NEW level
+            try {
+                const data = player.getSaveData(currentLevel);
+                localStorage.setItem('dungeon_save', JSON.stringify(data));
+                addLog("Game Progress Saved.");
+            } catch (e) {
+                console.error("Save failed:", e);
+            }
+
             loadLevel(currentLevel);
         }
     }

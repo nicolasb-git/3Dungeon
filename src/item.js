@@ -29,18 +29,23 @@ import { Weapon } from './weapon.js';
 
 export function createItem(data) {
     if (!data) return null;
+    let item = null;
     if (data.itemClass === 'Armor') {
-        return new Armor(data.name, data.itemType, data.defense, data.icon, data.price);
+        item = new Armor(data.name, data.itemType, data.defense, data.icon, data.price);
     } else if (data.itemClass === 'Potion') {
         const type = data.type || 'consumable';
-        return new Potion(data.name, data.icon, data.price, {
+        item = new Potion(data.name, data.icon, data.price, {
             healAmount: data.healAmount,
             statusId: data.statusId,
             cleanses: data.cleanses
         });
     } else if (data.itemClass === 'Weapon') {
-        return new Weapon(data.name, data.minDamage, data.maxDamage, data.cooldown, data.icon, data.price);
+        item = new Weapon(data.name, data.minDamage, data.maxDamage, data.cooldown, data.icon, data.price);
     }
-    return null;
+
+    if (item && data.id) {
+        item.itemId = data.id;
+    }
+    return item;
 }
 
