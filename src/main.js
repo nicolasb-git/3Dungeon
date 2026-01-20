@@ -257,6 +257,7 @@ function loadLevel(levelIndex) {
         console.log("Tried variations:", variations);
         console.log("Available map keys:", Object.keys(maps));
 
+        localStorage.removeItem('dungeon_save');
         document.getElementById('victory').style.display = 'flex';
         player.controls.unlock();
         return;
