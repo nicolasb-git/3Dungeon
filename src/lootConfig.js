@@ -256,5 +256,33 @@ export const LOOT_CONFIG = {
             chance: 0.09,
             item: ITEMS.leather_shoulder
         }
+    ],
+    cultist: [
+        {
+            type: 'gold',
+            chance: 0.9,
+            min: 50,
+            max: 120
+        },
+        {
+            type: 'item',
+            chance: 0.3,
+            item: ITEMS.healing_potion
+        },
+        {
+            type: 'item',
+            chance: 0.15,
+            item: ITEMS.strength_potion
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.superior_sword
+        },
+        {
+            type: 'item',
+            chance: 0.2,
+            item: ITEMS.cleanse_potion
+        }
     ]
 };

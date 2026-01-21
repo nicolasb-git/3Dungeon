@@ -326,6 +326,8 @@ function loadLevel(levelIndex) {
 
             if (type === 'knight_skeleton') {
                 addLog(`A powerful presence emerges... a Skeletal Knight!`);
+            } else if (type === 'cultist') {
+                addLog(`A dark ritual is whispered... a Dark Cultist enters!`);
             }
 
             const monster = new Monster(scene, monsterPos, type);
@@ -406,6 +408,11 @@ window.addEventListener('keydown', (e) => {
                 }
             }
         }
+    }
+
+    // Teleport Key (T)
+    if (e.code === 'KeyT' && player.hp > 0) {
+        openVendor();
     }
 });
 

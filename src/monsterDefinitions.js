@@ -113,5 +113,21 @@ export const MONSTERS = {
             idle: '/zombie_idle.png',
             attack: '/zombie_attack.png'
         }
+    },
+    cultist: {
+        id: 'cultist',
+        name: "Dark Cultist",
+        hp: 60,
+        def: 2,
+        attackDamage: { min: 15, max: 22 },
+        maxAttackCooldown: 1.2,
+        walkingSpeed: 1.0,
+        startLevel: 12,
+        spawnWeight: 10,
+        scale: 0.8,
+        texturePaths: {
+            idle: '/cultist_idle.png',
+            attack: '/cultist_attack.png'
+        }
     }
 };
