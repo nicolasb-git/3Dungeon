@@ -60,6 +60,8 @@ export class Player {
         this.slashTimer = 0;
         this.attackCooldown = 0;
         this.maxAttackCooldown = characterClass.weapon.cooldown;
+        this.secondaryCooldown = 0;
+        this.maxSecondaryCooldown = 5.0;
         this.audioCtx = null;
         this.soundEnabled = true;
 
@@ -305,6 +307,45 @@ export class Player {
                 }
             }
         }
+        return hits;
+    }
+
+    powerAttack(monsters = []) {
+        if (this.secondaryCooldown > 0 || this.attackCooldown > 0) return [];
+
+        this.secondaryCooldown = this.maxSecondaryCooldown;
+        this.attackCooldown = 0.5; // Prevent immediate primary attack
+
+        this.slashTimer = 0.3; // Longer visual for power attack
+        this.slashSprite.visible = true;
+        this.slashSprite.material.rotation = 0; // Fixed rotation for power attack
+        this.slashSprite.material.opacity = 1.0;
+        this.slashSprite.scale.set(0.8, 0.8, 1); // Larger scale
+
+        this._playSlashSound();
+        this._playSlashSound(); // Double sound for "power" feel
+
+        let hits = [];
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        const playerPos = this.camera.position;
+
+        for (const monster of monsters) {
+            if (!monster.sprite) continue;
+
+            const dist = playerPos.distanceTo(monster.sprite.position);
+            if (dist < 1.5) { // Slightly larger range for power attack
+                const mDir = monster.sprite.position.clone().sub(playerPos).normalize();
+                const dot = forward.dot(mDir);
+
+                if (dot > 0.4) { // Even wider cone
+                    const baseDamage = this.isGodMode ? 9999 : this.weapon.getDamage() * 2;
+                    const totalDamage = baseDamage + this.str;
+                    const isDead = monster.takeDamage(totalDamage);
+                    hits.push({ damage: totalDamage, baseDamage, str: this.str, isDead, monster, isPower: true });
+                }
+            }
+        }
+
         return hits;
     }
 
@@ -681,10 +722,14 @@ export class Player {
 
         // --- GAMEPLAY UPDATE (Only when active) ---
 
-        // Update Cooldown
+        // Update Cooldowns
         if (this.attackCooldown > 0) {
             this.attackCooldown -= delta;
             if (this.attackCooldown < 0) this.attackCooldown = 0;
+        }
+        if (this.secondaryCooldown > 0) {
+            this.secondaryCooldown -= delta;
+            if (this.secondaryCooldown < 0) this.secondaryCooldown = 0;
         }
 
         // Update Slash
@@ -693,6 +738,7 @@ export class Player {
             this.slashSprite.material.opacity = Math.max(0, this.slashTimer / 0.2);
             if (this.slashTimer <= 0) {
                 this.slashSprite.visible = false;
+                this.slashSprite.scale.set(0.5, 0.5, 1); // Reset scale
             }
         }
 

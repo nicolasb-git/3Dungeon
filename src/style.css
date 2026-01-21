@@ -233,6 +233,16 @@ html {
   background: rgba(128, 128, 128, 0.6);
   pointer-events: none;
   transition: height 0.1s linear;
+  z-index: 1;
+}
+
+.cooldown-overlay.secondary {
+  background: rgba(52, 152, 219, 0.4);
+  /* Blue-ish */
+  z-index: 2;
+  width: 50%;
+  /* Only half to see both if they overlap? Or just full width? */
+  left: 50%;
 }
 
 #backpack {
@@ -377,6 +387,30 @@ html {
   font-size: 32px;
   font-weight: bold;
   text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+.damage-number.heavy {
+  color: #ff8c00;
+  /* Dark Orange */
+  font-size: 64px;
+  text-shadow: 3px 3px 0px #000, 0 0 30px #ff4500;
+  animation: float-bloody-heavy 1.2s forwards;
+}
+
+@keyframes float-bloody-heavy {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 1;
+  }
+
+  20% {
+    transform: translate(-50%, -60%) scale(1.5) rotate(10deg);
+  }
+
+  100% {
+    transform: translate(-50%, -180%) scale(2);
+    opacity: 0;
+  }
 }
 
 @keyframes float-bloody {

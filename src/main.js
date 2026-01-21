@@ -46,12 +46,15 @@ scene.add(camera);
 const portraitImg = document.getElementById('char-portrait');
 const logEl = document.getElementById('log');
 
-// Click Handler
+// Click Handlers
 const gameContainer = document.getElementById('game-container');
-gameContainer.addEventListener('click', (event) => {
+gameContainer.addEventListener('mousedown', (event) => {
     if (!player.isLocked) {
         player.controls.lock();
-    } else {
+        return;
+    }
+
+    if (event.button === 0) { // Left Click
         const hits = player.attack(monsters);
         hits.forEach(hitResult => {
             addLog(`You hit the ${hitResult.monster.name} for ${hitResult.damage} damage (${hitResult.baseDamage} + ${hitResult.str} STR)!`);
@@ -62,7 +65,29 @@ gameContainer.addEventListener('click', (event) => {
                 addLog(`The ${hitResult.monster.name} collapses into dust.`);
             }
         });
+    } else if (event.button === 2) { // Right Click
+        const hits = player.powerAttack(monsters);
+        if (hits.length > 0 || player.secondaryCooldown >= player.maxSecondaryCooldown - 0.1) {
+            // If hits > 0 or cooldown just started, we did an attack
+            if (hits.length === 0) {
+                addLog(`You unleash a POWERFUL swing, but hit nothing.`);
+            }
+        }
+        hits.forEach(hitResult => {
+            addLog(`POWER ATTACK! You smash the ${hitResult.monster.name} for ${hitResult.damage} damage!`);
+            if (hitResult.monster.sprite) {
+                showDamageNumber(hitResult.monster.sprite.position, hitResult.damage, 'heavy');
+            }
+            if (hitResult.isDead) {
+                addLog(`The ${hitResult.monster.name} is obliterated!`);
+            }
+        });
     }
+});
+
+// Prevent default context menu
+gameContainer.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
 });
 
 portraitImg.src = '/portrait.png';
@@ -78,6 +103,11 @@ if (swordSlot) {
     cooldownOverlay = document.createElement('div');
     cooldownOverlay.className = 'cooldown-overlay';
     swordSlot.appendChild(cooldownOverlay);
+
+    const powerCooldownOverlay = document.createElement('div');
+    powerCooldownOverlay.className = 'cooldown-overlay secondary';
+    swordSlot.appendChild(powerCooldownOverlay);
+    window.powerCooldownOverlay = powerCooldownOverlay; // Store globally for update
 }
 
 function addLog(message) {
@@ -701,6 +731,10 @@ function animate() {
         if (cooldownOverlay) {
             const percent = (player.attackCooldown / player.maxAttackCooldown) * 100;
             cooldownOverlay.style.height = `${percent}%`;
+        }
+        if (window.powerCooldownOverlay) {
+            const percent = (player.secondaryCooldown / player.maxSecondaryCooldown) * 100;
+            window.powerCooldownOverlay.style.height = `${percent}%`;
         }
 
         // Cleanup dead monsters and drop loot
