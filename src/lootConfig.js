@@ -215,8 +215,18 @@ export const LOOT_CONFIG = {
         },
         {
             type: 'item',
-            chance: 0.15,
-            item: ITEMS.healing_potion
+            chance: 0.1,
+            item: ITEMS.heavy_leather_boots
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.heavy_leather_shoulder
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.heavy_leather_tunic
         }
     ],
     zombie: [
@@ -255,6 +265,31 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.09,
             item: ITEMS.leather_shoulder
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.heavy_iron_plate
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.heavy_iron_boots
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.heavy_iron_greaves
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.heavy_basic_shield
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.heavy_rusty_chainmail
         }
     ],
     cultist: [
@@ -283,6 +318,36 @@ export const LOOT_CONFIG = {
             type: 'item',
             chance: 0.2,
             item: ITEMS.cleanse_potion
+        },
+        {
+            type: 'item',
+            chance: 0.05,
+            item: ITEMS.heavy_superior_sword
+        },
+        {
+            type: 'item',
+            chance: 0.07,
+            item: ITEMS.heavy_iron_shield
+        },
+        {
+            type: 'item',
+            chance: 0.06,
+            item: ITEMS.heavy_iron_helmet
+        },
+        {
+            type: 'item',
+            chance: 0.08,
+            item: ITEMS.heavy_iron_shoulder
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.heavy_basic_sword
+        },
+        {
+            type: 'item',
+            chance: 0.1,
+            item: ITEMS.heavy_leather_tunic
         }
     ]
 };

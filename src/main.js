@@ -472,8 +472,13 @@ function renderVendorInventories() {
     shopListEl.innerHTML = '';
     sellListEl.innerHTML = '';
 
-    // Shop Items (All items from ITEMS registry)
+    // Shop Items (Filtered based on level)
     Object.values(ITEMS).forEach(item => {
+        // Skip Heavy items if level < 12
+        if (item.id.startsWith('heavy_') && currentLevel < 12) {
+            return;
+        }
+
         const itemDiv = document.createElement('div');
         itemDiv.className = 'vendor-item';
         const cost = player.isGodMode ? 0 : item.price;

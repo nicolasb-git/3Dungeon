@@ -144,5 +144,125 @@ export const ITEMS = {
         defense: 4,
         price: 180,
         icon: '/iron_boots_icon.png'
+    },
+    // HEAVY VARIANTS
+    heavy_leather_tunic: {
+        id: 'heavy_leather_tunic',
+        name: 'Heavy Leather Tunic',
+        itemClass: 'Armor',
+        itemType: 'torso',
+        defense: 9,
+        price: 120,
+        icon: '/heavy_tunic_icon.png'
+    },
+    heavy_rusty_chainmail: {
+        id: 'heavy_rusty_chainmail',
+        name: 'Heavy Rusty Chainmail',
+        itemClass: 'Armor',
+        itemType: 'torso',
+        defense: 13,
+        price: 300,
+        icon: '/heavy_chainmail_icon.png'
+    },
+    heavy_iron_plate: {
+        id: 'heavy_iron_plate',
+        name: 'Heavy Iron Plate',
+        itemClass: 'Armor',
+        itemType: 'torso',
+        defense: 20,
+        price: 900,
+        icon: '/heavy_iron_plate_icon.png'
+    },
+    heavy_basic_sword: {
+        id: 'heavy_basic_sword',
+        name: 'Heavy Basic Sword',
+        itemClass: 'Weapon',
+        minDamage: 5,
+        maxDamage: 8,
+        cooldown: 0.6,
+        price: 250,
+        icon: '/heavy_sword_icon.png'
+    },
+    heavy_superior_sword: {
+        id: 'heavy_superior_sword',
+        name: 'Heavy Superior Sword',
+        itemClass: 'Weapon',
+        minDamage: 12,
+        maxDamage: 18,
+        cooldown: 0.5,
+        price: 1800,
+        icon: '/heavy_superior_sword_icon.png'
+    },
+    heavy_basic_shield: {
+        id: 'heavy_basic_shield',
+        name: 'Heavy Wooden Shield',
+        itemClass: 'Armor',
+        itemType: 'l-hand',
+        defense: 6,
+        price: 150,
+        icon: '/heavy_basic_shield_icon.png'
+    },
+    heavy_iron_shield: {
+        id: 'heavy_iron_shield',
+        name: 'Heavy Iron Shield',
+        itemClass: 'Armor',
+        itemType: 'l-hand',
+        defense: 12,
+        price: 500,
+        icon: '/heavy_iron_shield_icon.png'
+    },
+    heavy_iron_helmet: {
+        id: 'heavy_iron_helmet',
+        name: 'Heavy Iron Helmet',
+        itemClass: 'Armor',
+        itemType: 'head',
+        defense: 8,
+        price: 250,
+        icon: '/heavy_iron_helmet_icon.png'
+    },
+    heavy_iron_greaves: {
+        id: 'heavy_iron_greaves',
+        name: 'Heavy Iron Greaves',
+        itemClass: 'Armor',
+        itemType: 'legs',
+        defense: 10,
+        price: 350,
+        icon: '/heavy_iron_greaves_icon.png'
+    },
+    heavy_leather_shoulder: {
+        id: 'heavy_leather_shoulder',
+        name: 'Heavy Leather Shoulder',
+        itemClass: 'Armor',
+        itemType: 'shoulder',
+        defense: 5,
+        price: 80,
+        icon: '/heavy_leather_shoulder_icon.png'
+    },
+    heavy_iron_shoulder: {
+        id: 'heavy_iron_shoulder',
+        name: 'Heavy Iron Shoulder',
+        itemClass: 'Armor',
+        itemType: 'shoulder',
+        defense: 9,
+        price: 350,
+        icon: '/heavy_iron_shoulder_icon.png'
+    },
+    heavy_leather_boots: {
+        id: 'heavy_leather_boots',
+        name: 'Heavy Leather Boots',
+        itemClass: 'Armor',
+        itemType: 'boots',
+        defense: 5,
+        price: 90,
+        icon: '/heavy_leather_boots_icon.png'
+    },
+    heavy_iron_boots: {
+        id: 'heavy_iron_boots',
+        name: 'Heavy Iron Boots',
+        itemClass: 'Armor',
+        itemType: 'boots',
+        defense: 9,
+        price: 400,
+        icon: '/heavy_iron_boots_icon.png'
     }
 };
