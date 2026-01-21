@@ -37,8 +37,14 @@ export class Dungeon {
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.repeat.set(1, 2); // 2 units high
 
+        const secretWallTexture = loader.load('/ancient_wall_secret.png');
+        secretWallTexture.wrapS = THREE.RepeatWrapping;
+        secretWallTexture.wrapT = THREE.RepeatWrapping;
+        secretWallTexture.repeat.set(1, 2);
+
         // Materials
         const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture });
+        const secretWallMaterial = new THREE.MeshStandardMaterial({ map: secretWallTexture });
         const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture });
         const ceilingMaterial = new THREE.MeshStandardMaterial({ map: floorTexture }); // Same as floor texture
         const doorMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 }); // SaddleBrown for door
@@ -70,6 +76,12 @@ export class Dungeon {
                     // Add collision box
                     const box = new THREE.Box3().setFromObject(wall);
                     this.walls.push(box);
+                } else if (char === '-') {
+                    // Secret Passage (Solid wall, no collision, unique texture)
+                    const wall = new THREE.Mesh(geometry, secretWallMaterial);
+                    wall.position.set(x, 1, z);
+                    this.group.add(wall);
+                    // NO this.walls.push(box) -> Player can walk through it
                 } else if (char === 'X') {
                     // Start Position
                     this.startPosition.set(x, 0.5, z); // Player eye level approx

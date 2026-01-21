@@ -921,8 +921,8 @@ export class Player {
                 // Only draw if within vicinity (phantom circle)
                 const distToCenter = Math.sqrt(Math.pow(dx - centerX, 2) + Math.pow(dy - centerY, 2));
                 if (distToCenter < width / 2 - 2) {
-                    if (char === '*') {
-                        ctx.fillStyle = 'rgba(180, 180, 200, 0.5)'; // Ghostly Wall
+                    if (char === '*' || char === '-') {
+                        ctx.fillStyle = 'rgba(180, 180, 200, 0.5)'; // Ghostly Wall (Includes Secret)
                     } else if (char === 'O' || char === '0' || char === 'B') {
                         ctx.fillStyle = 'rgba(255, 215, 0, 0.7)'; // Special points
                     } else {
@@ -998,8 +998,8 @@ export class Player {
                 const dx = offsetX + x * scale;
                 const dy = offsetY + z * scale;
 
-                if (char === '*') {
-                    ctx.fillStyle = '#444'; // Wall
+                if (char === '*' || char === '-') {
+                    ctx.fillStyle = '#444'; // Wall (Includes Secret)
                 } else if (char === 'O' || char === '0' || char === 'B') {
                     ctx.fillStyle = '#f1c40f'; // Special
                 } else if (char === 'X') {
