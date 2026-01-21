@@ -158,7 +158,14 @@ const player = new Player(camera, document.getElementById('game-container'), war
 player.logger = addLog;
 
 function setupRespawnButton() {
-    const saveData = JSON.parse(localStorage.getItem('dungeon_save'));
+    const rawSave = localStorage.getItem('dungeon_save');
+    if (!rawSave) {
+        const respawnBtn = document.getElementById('respawn-btn');
+        if (respawnBtn) respawnBtn.style.display = 'none';
+        return;
+    }
+
+    const saveData = JSON.parse(rawSave);
     const respawnBtn = document.getElementById('respawn-btn');
 
     if (saveData && respawnBtn) {
@@ -169,27 +176,31 @@ function setupRespawnButton() {
         if (saveData.gold >= cost) {
             respawnBtn.disabled = false;
             respawnBtn.style.opacity = "1";
-            respawnBtn.onclick = () => {
+            respawnBtn.onclick = (e) => {
+                e.stopPropagation();
+
+                // Deduct cost from save data and update persistence immediately
+                saveData.gold -= cost;
+                localStorage.setItem('dungeon_save', JSON.stringify(saveData));
+
+                // Load the updated save
                 currentLevel = saveData.level;
                 player.loadSaveData(saveData, ITEMS, createItem);
-                player.gold -= cost; // Deduct the cost
-                player.hp = player.maxHp; // Restore full HP
-                player.updateUI();
 
+                // Reset game state
+                player.hp = player.maxHp;
+                player.updateUI();
                 loadLevel(currentLevel);
+
                 document.getElementById('game-over').style.display = 'none';
-                document.getElementById('victory').style.display = 'none';
                 addLog(`The gods demand payment... You paid ${cost} G to cheat death!`);
-                addLog(`Respawning on Floor ${currentLevel}...`);
             };
         } else {
             respawnBtn.disabled = true;
             respawnBtn.style.opacity = "0.5";
-            respawnBtn.title = "Not enough gold to respawn!";
+            respawnBtn.title = "Not enough gold in your save to respawn!";
             respawnBtn.onclick = null;
         }
-    } else if (respawnBtn) {
-        respawnBtn.style.display = 'none';
     }
 }
 
