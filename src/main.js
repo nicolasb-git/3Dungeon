@@ -234,6 +234,8 @@ function initSplashScreen() {
     const spawnBtn = document.getElementById('spawn-game-btn');
     const removeBtn = document.getElementById('remove-spawn-btn');
 
+    splash.onmousedown = (e) => e.stopPropagation();
+
     const menuMusic = new Audio('/166187__drminky__creepy-dungeon-ambience.wav');
     console.log("Audio object created. Waiting for user interaction to play...");
     menuMusic.loop = true;
@@ -591,6 +593,10 @@ function renderVendorInventories() {
             }
         };
 
+        itemDiv.onmousedown = (event) => {
+            event.stopPropagation();
+        };
+
         itemDiv.onmouseenter = () => player._showTooltip(item);
         itemDiv.onmouseleave = () => player._hideTooltip();
 
@@ -618,6 +624,10 @@ function renderVendorInventories() {
             addLog(`Sold ${item.name} for ${sellPrice} gold.`);
         };
 
+        itemDiv.onmousedown = (event) => {
+            event.stopPropagation();
+        };
+
         itemDiv.onmouseenter = () => player._showTooltip(item);
         itemDiv.onmouseleave = () => player._hideTooltip();
 
@@ -637,7 +647,7 @@ if (teleportBtn) {
 }
 
 if (vendorOverlay) {
-    vendorOverlay.addEventListener('click', (event) => {
+    vendorOverlay.addEventListener('mousedown', (event) => {
         event.stopPropagation();
     });
 }
@@ -646,7 +656,14 @@ if (closeVendorBtn) {
     closeVendorBtn.addEventListener('click', () => {
         closeVendor();
     });
+    closeVendorBtn.onmousedown = (e) => e.stopPropagation();
 }
+
+// Global Overlay Protection
+['game-over', 'victory', 'full-map-overlay'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.onmousedown = (e) => e.stopPropagation();
+});
 
 // Inventory Click Handlers
 document.querySelectorAll('.backpack-slot').forEach((slot, index) => {
