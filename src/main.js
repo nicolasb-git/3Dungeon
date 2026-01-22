@@ -22,7 +22,7 @@ let lastInvFullMsgTime = 0; // Throttle for inventory full messages
 // Music Management
 const dungeonMusic = new Audio('/753200__shumworld__dungeon-loop.wav');
 dungeonMusic.loop = true;
-dungeonMusic.volume = 0.4; // Slightly lower volume for ambience
+dungeonMusic.volume = 0.24; // Set to 60% of original baseline volume (0.4 * 0.6)
 
 // Scene Setup
 const scene = new THREE.Scene();
@@ -267,7 +267,10 @@ function initSplashScreen() {
         currentLevel = 1;
         loadLevel(currentLevel);
         addLog("Starting a new journey...");
+        window.removeEventListener('mousedown', tryPlayMusic);
+        window.removeEventListener('keydown', tryPlayMusic);
         menuMusic.pause();
+        menuMusic.currentTime = 0;
         dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
     };
 
@@ -282,7 +285,10 @@ function initSplashScreen() {
         player.loadSaveData(saveData, ITEMS, createItem);
         loadLevel(currentLevel);
         addLog(`Resuming your journey on Floor ${currentLevel}...`);
+        window.removeEventListener('mousedown', tryPlayMusic);
+        window.removeEventListener('keydown', tryPlayMusic);
         menuMusic.pause();
+        menuMusic.currentTime = 0;
         dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
     };
 
