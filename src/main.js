@@ -19,6 +19,11 @@ let monsters = []; // Store active monsters
 let loots = []; // Store active loot
 let lastInvFullMsgTime = 0; // Throttle for inventory full messages
 
+// Music Management
+const dungeonMusic = new Audio('/753200__shumworld__dungeon-loop.wav');
+dungeonMusic.loop = true;
+dungeonMusic.volume = 0.4; // Slightly lower volume for ambience
+
 // Scene Setup
 const scene = new THREE.Scene();
 const fogColor = 0x101010;
@@ -229,6 +234,22 @@ function initSplashScreen() {
     const spawnBtn = document.getElementById('spawn-game-btn');
     const removeBtn = document.getElementById('remove-spawn-btn');
 
+    const menuMusic = new Audio('/166187__drminky__creepy-dungeon-ambience.wav');
+    console.log("Audio object created. Waiting for user interaction to play...");
+    menuMusic.loop = true;
+    menuMusic.volume = 0.5;
+
+    const tryPlayMusic = () => {
+        menuMusic.play()
+            .then(() => console.log("Splash ambience playing!"))
+            .catch(e => console.log("Autoplay still blocked. Click required."));
+    };
+
+    // Try playing immediately, then on first interaction
+    tryPlayMusic();
+    window.addEventListener('mousedown', tryPlayMusic, { once: true });
+    window.addEventListener('keydown', tryPlayMusic, { once: true });
+
     const rawSave = localStorage.getItem('dungeon_save');
     if (!rawSave) {
         spawnBtn.disabled = true;
@@ -244,6 +265,8 @@ function initSplashScreen() {
         currentLevel = 1;
         loadLevel(currentLevel);
         addLog("Starting a new journey...");
+        menuMusic.pause();
+        dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
     };
 
     spawnBtn.onclick = () => {
@@ -257,6 +280,8 @@ function initSplashScreen() {
         player.loadSaveData(saveData, ITEMS, createItem);
         loadLevel(currentLevel);
         addLog(`Resuming your journey on Floor ${currentLevel}...`);
+        menuMusic.pause();
+        dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
     };
 
     removeBtn.onclick = () => {
