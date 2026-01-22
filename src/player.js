@@ -316,6 +316,10 @@ export class Player {
         this.secondaryCooldown = this.maxSecondaryCooldown;
         this.attackCooldown = 0.5; // Prevent immediate primary attack
 
+        // Remove glow if it was active
+        const glow = document.getElementById('power-ready-glow');
+        if (glow) glow.classList.remove('active');
+
         this.slashTimer = 0.3; // Longer visual for power attack
         this.slashSprite.visible = true;
         this.slashSprite.material.rotation = 0; // Fixed rotation for power attack
@@ -585,6 +589,17 @@ export class Player {
         oscillator2.stop(this.audioCtx.currentTime + 0.15);
     }
 
+    _triggerPowerReadyGlow() {
+        if (this.hp <= 0) return;
+        console.log("Power Attack Ready!");
+        const glow = document.getElementById('power-ready-glow');
+        if (glow) {
+            glow.classList.remove('active');
+            void glow.offsetWidth; // Force reflow to allow re-triggering the animation
+            glow.classList.add('active');
+        }
+    }
+
     _playScratchSound() {
         if (!this.soundEnabled) return;
         if (!this.audioCtx) {
@@ -718,10 +733,6 @@ export class Player {
             this.renderFullMap();
         }
 
-        if (!this.isLocked) return;
-
-        // --- GAMEPLAY UPDATE (Only when active) ---
-
         // Update Cooldowns
         if (this.attackCooldown > 0) {
             this.attackCooldown -= delta;
@@ -729,8 +740,15 @@ export class Player {
         }
         if (this.secondaryCooldown > 0) {
             this.secondaryCooldown -= delta;
-            if (this.secondaryCooldown < 0) this.secondaryCooldown = 0;
+            if (this.secondaryCooldown <= 0) {
+                this.secondaryCooldown = 0;
+                this._triggerPowerReadyGlow();
+            }
         }
+
+        if (!this.isLocked) return;
+
+        // --- GAMEPLAY UPDATE (Only when active) ---
 
         // Update Slash
         if (this.slashTimer > 0) {
