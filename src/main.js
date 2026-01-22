@@ -49,6 +49,8 @@ const logEl = document.getElementById('log');
 // Click Handlers
 const gameContainer = document.getElementById('game-container');
 gameContainer.addEventListener('mousedown', (event) => {
+    if (!dungeon) return;
+
     if (!player.isLocked) {
         player.controls.lock();
         return;
@@ -220,6 +222,52 @@ if (playAgainBtn) playAgainBtn.addEventListener('click', startNewGame);
 
 document.getElementById('floor-val').textContent = currentLevel;
 player.updateUI();
+
+function initSplashScreen() {
+    const splash = document.getElementById('splash-screen');
+    const startBtn = document.getElementById('start-game-btn');
+    const spawnBtn = document.getElementById('spawn-game-btn');
+    const removeBtn = document.getElementById('remove-spawn-btn');
+
+    const rawSave = localStorage.getItem('dungeon_save');
+    if (!rawSave) {
+        spawnBtn.disabled = true;
+        removeBtn.disabled = true;
+    }
+
+    startBtn.onclick = () => {
+        splash.style.display = 'none';
+        document.getElementById('hud').style.display = 'flex';
+        // Note: We don't necessarily clear save on Start if we want it to stay until explicitly removed,
+        // but typically "Start New Game" should probably warn or just start fresh.
+        // User said "first start the game as always", which usually means from Level 1.
+        currentLevel = 1;
+        loadLevel(currentLevel);
+        addLog("Starting a new journey...");
+    };
+
+    spawnBtn.onclick = () => {
+        const currentSave = localStorage.getItem('dungeon_save');
+        if (!currentSave) return;
+
+        splash.style.display = 'none';
+        document.getElementById('hud').style.display = 'flex';
+        const saveData = JSON.parse(currentSave);
+        currentLevel = saveData.level;
+        player.loadSaveData(saveData, ITEMS, createItem);
+        loadLevel(currentLevel);
+        addLog(`Resuming your journey on Floor ${currentLevel}...`);
+    };
+
+    removeBtn.onclick = () => {
+        localStorage.removeItem('dungeon_save');
+        spawnBtn.disabled = true;
+        removeBtn.disabled = true;
+        addLog("Dungeon save wiped from existence.");
+    };
+}
+
+initSplashScreen();
 
 async function checkAssetExists(path) {
     try {
@@ -401,8 +449,8 @@ function loadLevel(levelIndex) {
     addLog(`Entering Level ${levelIndex}...`);
 }
 
-// Initial Load
-loadLevel(currentLevel);
+// Initial Load - Removed, handled by splash screen
+// loadLevel(currentLevel);
 
 // UI Logic
 const instructions = document.getElementById('instructions');
@@ -646,6 +694,11 @@ function animate() {
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
+
+    if (!dungeon) {
+        renderer.render(scene, camera);
+        return;
+    }
 
     if (player.hp <= 0) {
         document.getElementById('game-over').style.display = 'flex';
