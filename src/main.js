@@ -20,9 +20,19 @@ let loots = []; // Store active loot
 let lastInvFullMsgTime = 0; // Throttle for inventory full messages
 
 // Music Management
-const dungeonMusic = new Audio('/753200__shumworld__dungeon-loop.wav');
-dungeonMusic.loop = true;
-dungeonMusic.volume = 0.24; // Set to 60% of original baseline volume (0.4 * 0.6)
+if (!window.dungeonMusic) {
+    window.dungeonMusic = new Audio('/753200__shumworld__dungeon-loop.wav');
+    window.dungeonMusic.loop = true;
+}
+const dungeonMusic = window.dungeonMusic;
+dungeonMusic.volume = 0.24;
+
+if (!window.menuMusic) {
+    window.menuMusic = new Audio('/166187__drminky__creepy-dungeon-ambience.wav');
+    window.menuMusic.loop = true;
+}
+const menuMusic = window.menuMusic;
+menuMusic.volume = 0.5;
 
 // Scene Setup
 const scene = new THREE.Scene();
@@ -236,12 +246,10 @@ function initSplashScreen() {
 
     splash.onmousedown = (e) => e.stopPropagation();
 
-    const menuMusic = new Audio('/166187__drminky__creepy-dungeon-ambience.wav');
-    console.log("Audio object created. Waiting for user interaction to play...");
-    menuMusic.loop = true;
-    menuMusic.volume = 0.5;
+    console.log("Audio objects created. Waiting for user interaction to play...");
 
     const tryPlayMusic = () => {
+        if (!player.soundEnabled) return;
         menuMusic.play()
             .then(() => console.log("Splash ambience playing!"))
             .catch(e => console.log("Autoplay still blocked. Click required."));
@@ -271,7 +279,9 @@ function initSplashScreen() {
         window.removeEventListener('keydown', tryPlayMusic);
         menuMusic.pause();
         menuMusic.currentTime = 0;
-        dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
+        if (player.soundEnabled) {
+            dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
+        }
     };
 
     spawnBtn.onclick = () => {
@@ -289,7 +299,9 @@ function initSplashScreen() {
         window.removeEventListener('keydown', tryPlayMusic);
         menuMusic.pause();
         menuMusic.currentTime = 0;
-        dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
+        if (player.soundEnabled) {
+            dungeonMusic.play().catch(e => console.log("Dungeon music blocked:", e));
+        }
     };
 
     removeBtn.onclick = () => {
@@ -504,11 +516,40 @@ window.addEventListener('resize', () => {
 // Sound Toggle
 const soundBtn = document.getElementById('sound-toggle');
 if (soundBtn) {
+    soundBtn.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+    });
     soundBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         player.soundEnabled = !player.soundEnabled;
+        console.log("Sound Toggle Clicked - Enabled:", player.soundEnabled);
+
         soundBtn.textContent = player.soundEnabled ? '🔊' : '🔇';
         soundBtn.classList.toggle('muted', !player.soundEnabled);
+
+        // Control Music
+        const isMuted = !player.soundEnabled;
+        dungeonMusic.muted = isMuted;
+        menuMusic.muted = isMuted;
+
+        // Also force volume to 0 to be absolutely sure
+        dungeonMusic.volume = isMuted ? 0 : 0.24;
+        menuMusic.volume = isMuted ? 0 : 0.5;
+
+        if (isMuted) {
+            dungeonMusic.pause();
+            menuMusic.pause();
+            console.log("Background music paused and volume cleared.");
+        } else {
+            console.log("Background music resuming...");
+            // Only resume what should be playing
+            if (!dungeon) {
+                menuMusic.play().catch((e) => console.log("Menu music blocked:", e));
+            } else {
+                dungeonMusic.play().catch((e) => console.log("Dungeon music blocked:", e));
+            }
+        }
+
         addLog(`Sound ${player.soundEnabled ? 'Enabled' : 'Disabled'}`);
     });
 }
