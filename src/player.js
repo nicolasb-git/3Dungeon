@@ -333,12 +333,12 @@ export class Player {
             if (!monster.sprite) continue;
 
             const dist = playerPos.distanceTo(monster.sprite.position);
-            if (dist < 1.5) { // Slightly larger range for power attack
+            if (dist < 1.8) { // Increased range for power attack
                 const mDir = monster.sprite.position.clone().sub(playerPos).normalize();
                 const dot = forward.dot(mDir);
 
                 if (dot > 0.4) { // Even wider cone
-                    const baseDamage = this.isGodMode ? 9999 : this.weapon.getDamage() * 2;
+                    const baseDamage = this.isGodMode ? 9999 : this.weapon.getDamage() * 3;
                     const totalDamage = baseDamage + this.str;
                     const isDead = monster.takeDamage(totalDamage);
                     hits.push({ damage: totalDamage, baseDamage, str: this.str, isDead, monster, isPower: true });
