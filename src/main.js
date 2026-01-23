@@ -23,6 +23,7 @@ let lastInvFullMsgTime = 0; // Throttle for inventory full messages
 if (!window.dungeonMusic) {
     window.dungeonMusic = new Audio('/753200__shumworld__dungeon-loop.wav');
     window.dungeonMusic.loop = true;
+    window.dungeonMusic.addEventListener('error', (e) => console.error("Dungeon Music Load Error:", e));
 }
 const dungeonMusic = window.dungeonMusic;
 dungeonMusic.volume = 0.24;
@@ -30,9 +31,11 @@ dungeonMusic.volume = 0.24;
 if (!window.menuMusic) {
     window.menuMusic = new Audio('/166187__drminky__creepy-dungeon-ambience.wav');
     window.menuMusic.loop = true;
+    window.menuMusic.addEventListener('error', (e) => console.error("Menu Music Load Error:", e));
 }
 const menuMusic = window.menuMusic;
 menuMusic.volume = 0.5;
+
 
 // Scene Setup
 const scene = new THREE.Scene();
@@ -256,9 +259,11 @@ function initSplashScreen() {
     };
 
     // Try playing immediately, then on first interaction
+    // We use capture: true to ensure we catch the interaction even if child elements stopPropagation()
     tryPlayMusic();
-    window.addEventListener('mousedown', tryPlayMusic, { once: true });
-    window.addEventListener('keydown', tryPlayMusic, { once: true });
+    window.addEventListener('mousedown', tryPlayMusic, { once: true, capture: true });
+    window.addEventListener('keydown', tryPlayMusic, { once: true, capture: true });
+
 
     const rawSave = localStorage.getItem('dungeon_save');
     if (!rawSave) {
