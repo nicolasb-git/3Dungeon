@@ -6,7 +6,7 @@ export const ITEMS = {
         itemType: 'torso',
         defense: 5,
         price: 50,
-        icon: '/tunic_icon.png'
+        icon: '/items/tunic_icon.png'
     },
     rusty_chainmail: {
         id: 'rusty_chainmail',
@@ -15,7 +15,7 @@ export const ITEMS = {
         itemType: 'torso',
         defense: 8,
         price: 150,
-        icon: '/chainmail_icon.png'
+        icon: '/items/chainmail_icon.png'
     },
     iron_plate: {
         id: 'iron_plate',
@@ -24,7 +24,7 @@ export const ITEMS = {
         itemType: 'torso',
         defense: 12,
         price: 400,
-        icon: '/iron_plate_icon.png'
+        icon: '/items/iron_plate_icon.png'
     },
     healing_potion: {
         id: 'healing_potion',
@@ -33,7 +33,7 @@ export const ITEMS = {
         type: 'consumable',
         healAmount: 30,
         price: 25,
-        icon: '/potion_icon.png'
+        icon: '/items/potion_icon.png'
     },
     strength_potion: {
         id: 'strength_potion',
@@ -42,7 +42,7 @@ export const ITEMS = {
         type: 'consumable',
         statusId: 'strength',
         price: 30,
-        icon: '/strength_potion.png'
+        icon: '/items/strength_potion.png'
     },
     cleanse_potion: {
         id: 'cleanse_potion',
@@ -51,7 +51,7 @@ export const ITEMS = {
         itemClass: 'Potion',
         cleanses: true,
         price: 45,
-        icon: '/cleanse_potion.png'
+        icon: '/items/cleanse_potion.png'
     },
     basic_sword: {
         id: 'basic_sword',
@@ -61,7 +61,7 @@ export const ITEMS = {
         maxDamage: 4,
         cooldown: 0.5,
         price: 100,
-        icon: '/sword_icon.png'
+        icon: '/items/sword_icon.png'
     },
     superior_sword: {
         id: 'superior_sword',
@@ -71,7 +71,7 @@ export const ITEMS = {
         maxDamage: 10,
         cooldown: 0.4,
         price: 800,
-        icon: '/superior_sword_icon.png'
+        icon: '/items/superior_sword_icon.png'
     },
     basic_shield: {
         id: 'basic_shield',
@@ -80,7 +80,7 @@ export const ITEMS = {
         itemType: 'l-hand',
         defense: 3,
         price: 75,
-        icon: '/basic_shield_icon.png'
+        icon: '/items/basic_shield_icon.png'
     },
     iron_shield: {
         id: 'iron_shield',
@@ -89,7 +89,7 @@ export const ITEMS = {
         itemType: 'l-hand',
         defense: 7,
         price: 250,
-        icon: '/iron_shield_icon.png'
+        icon: '/items/iron_shield_icon.png'
     },
     iron_helmet: {
         id: 'iron_helmet',
@@ -98,7 +98,7 @@ export const ITEMS = {
         itemType: 'head',
         defense: 4,
         price: 120,
-        icon: '/iron_helmet_icon.png'
+        icon: '/items/iron_helmet_icon.png'
     },
     iron_greaves: {
         id: 'iron_greaves',
@@ -107,7 +107,7 @@ export const ITEMS = {
         itemType: 'legs',
         defense: 5,
         price: 150,
-        icon: '/iron_greaves_icon.png'
+        icon: '/items/iron_greaves_icon.png'
     },
     leather_shoulder: {
         id: 'leather_shoulder',
@@ -116,7 +116,7 @@ export const ITEMS = {
         itemType: 'shoulder',
         defense: 2,
         price: 35,
-        icon: '/leather_shoulder_icon.png'
+        icon: '/items/leather_shoulder_icon.png'
     },
     iron_shoulder: {
         id: 'iron_shoulder',
@@ -125,7 +125,7 @@ export const ITEMS = {
         itemType: 'shoulder',
         defense: 4,
         price: 160,
-        icon: '/iron_shoulder_icon.png'
+        icon: '/items/iron_shoulder_icon.png'
     },
     leather_boots: {
         id: 'leather_boots',
@@ -134,7 +134,7 @@ export const ITEMS = {
         itemType: 'boots',
         defense: 2,
         price: 40,
-        icon: '/leather_boots_icon.png'
+        icon: '/items/leather_boots_icon.png'
     },
     iron_boots: {
         id: 'iron_boots',
@@ -143,7 +143,7 @@ export const ITEMS = {
         itemType: 'boots',
         defense: 4,
         price: 180,
-        icon: '/iron_boots_icon.png'
+        icon: '/items/iron_boots_icon.png'
     },
     // HEAVY VARIANTS
     heavy_leather_tunic: {
@@ -153,7 +153,7 @@ export const ITEMS = {
         itemType: 'torso',
         defense: 9,
         price: 120,
-        icon: '/heavy_tunic_icon.png'
+        icon: '/items/heavy_tunic_icon.png'
     },
     heavy_rusty_chainmail: {
         id: 'heavy_rusty_chainmail',
@@ -162,7 +162,7 @@ export const ITEMS = {
         itemType: 'torso',
         defense: 13,
         price: 300,
-        icon: '/heavy_chainmail_icon.png'
+        icon: '/items/heavy_chainmail_icon.png'
     },
     heavy_iron_plate: {
         id: 'heavy_iron_plate',
@@ -171,7 +171,7 @@ export const ITEMS = {
         itemType: 'torso',
         defense: 20,
         price: 900,
-        icon: '/heavy_iron_plate_icon.png'
+        icon: '/items/heavy_iron_plate_icon.png'
     },
     heavy_basic_sword: {
         id: 'heavy_basic_sword',
@@ -181,7 +181,7 @@ export const ITEMS = {
         maxDamage: 8,
         cooldown: 0.6,
         price: 250,
-        icon: '/heavy_sword_icon.png'
+        icon: '/items/heavy_sword_icon.png'
     },
     heavy_superior_sword: {
         id: 'heavy_superior_sword',
@@ -191,7 +191,7 @@ export const ITEMS = {
         maxDamage: 18,
         cooldown: 0.5,
         price: 1800,
-        icon: '/heavy_superior_sword_icon.png'
+        icon: '/items/heavy_superior_sword_icon.png'
     },
     heavy_basic_shield: {
         id: 'heavy_basic_shield',
@@ -200,7 +200,7 @@ export const ITEMS = {
         itemType: 'l-hand',
         defense: 6,
         price: 150,
-        icon: '/heavy_basic_shield_icon.png'
+        icon: '/items/heavy_basic_shield_icon.png'
     },
     heavy_iron_shield: {
         id: 'heavy_iron_shield',
@@ -209,7 +209,7 @@ export const ITEMS = {
         itemType: 'l-hand',
         defense: 12,
         price: 500,
-        icon: '/heavy_iron_shield_icon.png'
+        icon: '/items/heavy_iron_shield_icon.png'
     },
     heavy_iron_helmet: {
         id: 'heavy_iron_helmet',
@@ -218,7 +218,7 @@ export const ITEMS = {
         itemType: 'head',
         defense: 8,
         price: 250,
-        icon: '/heavy_iron_helmet_icon.png'
+        icon: '/items/heavy_iron_helmet_icon.png'
     },
     heavy_iron_greaves: {
         id: 'heavy_iron_greaves',
@@ -227,7 +227,7 @@ export const ITEMS = {
         itemType: 'legs',
         defense: 10,
         price: 350,
-        icon: '/heavy_iron_greaves_icon.png'
+        icon: '/items/heavy_iron_greaves_icon.png'
     },
     heavy_leather_shoulder: {
         id: 'heavy_leather_shoulder',
@@ -236,7 +236,7 @@ export const ITEMS = {
         itemType: 'shoulder',
         defense: 5,
         price: 80,
-        icon: '/heavy_leather_shoulder_icon.png'
+        icon: '/items/heavy_leather_shoulder_icon.png'
     },
     heavy_iron_shoulder: {
         id: 'heavy_iron_shoulder',
@@ -245,7 +245,7 @@ export const ITEMS = {
         itemType: 'shoulder',
         defense: 9,
         price: 350,
-        icon: '/heavy_iron_shoulder_icon.png'
+        icon: '/items/heavy_iron_shoulder_icon.png'
     },
     heavy_leather_boots: {
         id: 'heavy_leather_boots',
@@ -254,7 +254,7 @@ export const ITEMS = {
         itemType: 'boots',
         defense: 5,
         price: 90,
-        icon: '/heavy_leather_boots_icon.png'
+        icon: '/items/heavy_leather_boots_icon.png'
     },
     heavy_iron_boots: {
         id: 'heavy_iron_boots',
@@ -263,6 +263,6 @@ export const ITEMS = {
         itemType: 'boots',
         defense: 9,
         price: 400,
-        icon: '/heavy_iron_boots_icon.png'
+        icon: '/items/heavy_iron_boots_icon.png'
     }
 };

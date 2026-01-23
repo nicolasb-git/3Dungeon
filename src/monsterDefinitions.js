@@ -11,8 +11,8 @@ export const MONSTERS = {
         spawnWeight: 10,
         scale: 0.8,
         texturePaths: {
-            idle: '/monster.png',
-            attack: '/monster_attack.png'
+            idle: '/monsters/monster.png',
+            attack: '/monsters/monster_attack.png'
         }
     },
     skeleton: {
@@ -27,8 +27,8 @@ export const MONSTERS = {
         spawnWeight: 5,
         scale: 0.8,
         texturePaths: {
-            idle: '/skeleton.png',
-            attack: '/skeleton_attack.png'
+            idle: '/monsters/skeleton.png',
+            attack: '/monsters/skeleton_attack.png'
         }
     },
     knight_skeleton: {
@@ -43,8 +43,8 @@ export const MONSTERS = {
         spawnWeight: 4, // Slightly increased weight
         scale: 0.85,
         texturePaths: {
-            idle: '/knight_skeleton.png',
-            attack: '/knight_skeleton_attack.png'
+            idle: '/monsters/knight_skeleton.png',
+            attack: '/monsters/knight_skeleton_attack.png'
         }
     },
     rat: {
@@ -60,8 +60,8 @@ export const MONSTERS = {
         scale: 0.4,
         plagueChance: 0.1,
         texturePaths: {
-            idle: '/rat.png',
-            attack: '/rat_attack.png'
+            idle: '/monsters/rat.png',
+            attack: '/monsters/rat_attack.png'
         }
     },
     skeletal_boss: {
@@ -77,8 +77,8 @@ export const MONSTERS = {
         scale: 1.5,
         isBoss: true,
         texturePaths: {
-            idle: '/lord_rattles_idle.png',
-            attack: '/lord_rattles_attack.png'
+            idle: '/monsters/lord_rattles_idle.png',
+            attack: '/monsters/lord_rattles_attack.png'
         }
     },
     snake: {
@@ -94,8 +94,8 @@ export const MONSTERS = {
         scale: 0.5,
         poisonChance: 0.2,
         texturePaths: {
-            idle: '/snake_idle.png',
-            attack: '/snake_attack.png'
+            idle: '/monsters/snake_idle.png',
+            attack: '/monsters/snake_attack.png'
         }
     },
     zombie: {
@@ -110,8 +110,8 @@ export const MONSTERS = {
         spawnWeight: 8,
         scale: 0.9,
         texturePaths: {
-            idle: '/zombie_idle.png',
-            attack: '/zombie_attack.png'
+            idle: '/monsters/zombie_idle.png',
+            attack: '/monsters/zombie_attack.png'
         }
     },
     cultist: {
@@ -126,8 +126,8 @@ export const MONSTERS = {
         spawnWeight: 10,
         scale: 0.8,
         texturePaths: {
-            idle: '/cultist_idle.png',
-            attack: '/cultist_attack.png'
+            idle: '/monsters/cultist_idle.png',
+            attack: '/monsters/cultist_attack.png'
         }
     }
 };

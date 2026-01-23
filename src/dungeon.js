@@ -18,12 +18,12 @@ export class Dungeon {
         const loader = new THREE.TextureLoader();
 
         // Biome / Theme Selection
-        let floorPath = '/cobblestone.png';
-        let wallPath = '/stone_bricks.png';
+        let floorPath = '/environment/cobblestone.png';
+        let wallPath = '/environment/stone_bricks.png';
 
         if (this.levelIndex >= 12) {
-            floorPath = '/ancient_floor.png';
-            wallPath = '/ancient_wall.png';
+            floorPath = '/environment/ancient_floor.png';
+            wallPath = '/environment/ancient_wall.png';
         }
 
         // Load textures
@@ -37,7 +37,7 @@ export class Dungeon {
         wallTexture.wrapT = THREE.RepeatWrapping;
         wallTexture.repeat.set(1, 2); // 2 units high
 
-        const secretWallTexture = loader.load('/ancient_wall_secret.png');
+        const secretWallTexture = loader.load('/environment/ancient_wall_secret.png');
         secretWallTexture.wrapS = THREE.RepeatWrapping;
         secretWallTexture.wrapT = THREE.RepeatWrapping;
         secretWallTexture.repeat.set(1, 2);

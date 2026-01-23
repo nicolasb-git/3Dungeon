@@ -43,7 +43,7 @@ export class Player {
 
         // Slash Effect
         const loader = new THREE.TextureLoader();
-        const slashTexture = loader.load('/slash.png');
+        const slashTexture = loader.load('/ui/slash.png');
         const slashMaterial = new THREE.SpriteMaterial({
             map: slashTexture,
             transparent: true,

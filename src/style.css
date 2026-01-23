@@ -305,14 +305,14 @@ html {
 }
 
 #buff-god-mode {
-  background-image: url('/god_mode_icon.png');
+  background-image: url('/ui/god_mode_icon.png');
   border-color: #f1c40f;
   box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
   animation: buff-pulse 2s infinite ease-in-out;
 }
 
 #buff-plague {
-  background-image: url('/plague_icon.png');
+  background-image: url('/ui/plague_icon.png');
   border-color: #27ae60;
   box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
   animation: buff-pulse 1s infinite ease-in-out;
@@ -557,7 +557,7 @@ html {
 }
 
 #splash-screen {
-  background: url('/splash.webp') no-repeat center center;
+  background: url('/ui/splash.webp') no-repeat center center;
   background-size: cover;
 }
 

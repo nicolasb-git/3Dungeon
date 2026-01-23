@@ -3,7 +3,7 @@ export const STATUSES = {
         id: 'plague',
         name: 'Plague',
         type: 'debuff',
-        icon: '/plague_icon.png',
+        icon: '/ui/plague_icon.png',
         duration: 120,
         tickInterval: 10,
         description: (player) => `Loses 2% current HP every 10s.`,
@@ -25,7 +25,7 @@ export const STATUSES = {
         id: 'poison',
         name: 'Poison',
         type: 'debuff',
-        icon: '/poison_icon.png',
+        icon: '/ui/poison_icon.png',
         duration: 60,
         tickInterval: 5,
         description: (player) => `Loses 3% HP every 5s.`,
@@ -47,7 +47,7 @@ export const STATUSES = {
         id: 'strength',
         name: 'Strength Boost',
         type: 'buff',
-        icon: '/strength_potion.png', // Updated icon
+        icon: '/items/strength_potion.png', // Updated icon
         duration: 60,
         description: (player) => `+5 STR for 60s`,
         onApply: (player, logger) => {

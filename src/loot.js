@@ -9,7 +9,7 @@ export class Loot {
         this.collected = false;
         this.removed = false;
 
-        const texturePath = this.item ? this.item.icon : '/gold_coins.png';
+        const texturePath = this.item ? this.item.icon : '/items/gold_coins.png';
 
         const loader = new THREE.TextureLoader();
         loader.load(texturePath, (texture) => {

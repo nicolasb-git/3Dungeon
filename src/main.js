@@ -21,7 +21,7 @@ let lastInvFullMsgTime = 0; // Throttle for inventory full messages
 
 // Music Management
 if (!window.dungeonMusic) {
-    window.dungeonMusic = new Audio('/753200__shumworld__dungeon-loop.wav');
+    window.dungeonMusic = new Audio('/audio/dungeon_loop.wav');
     window.dungeonMusic.loop = true;
     window.dungeonMusic.addEventListener('error', (e) => console.error("Dungeon Music Load Error:", e));
 }
@@ -29,7 +29,7 @@ const dungeonMusic = window.dungeonMusic;
 dungeonMusic.volume = 0.24;
 
 if (!window.menuMusic) {
-    window.menuMusic = new Audio('/166187__drminky__creepy-dungeon-ambience.wav');
+    window.menuMusic = new Audio('/audio/ambient.wav');
     window.menuMusic.loop = true;
     window.menuMusic.addEventListener('error', (e) => console.error("Menu Music Load Error:", e));
 }
@@ -110,7 +110,7 @@ gameContainer.addEventListener('contextmenu', (e) => {
     e.preventDefault();
 });
 
-portraitImg.src = '/portrait.png';
+portraitImg.src = '/ui/portrait.png';
 
 // Initial Equipment
 const swordSlot = document.getElementById('slot-r-hand');
@@ -118,7 +118,7 @@ let cooldownOverlay = null;
 
 if (swordSlot) {
     swordSlot.classList.add('equipped');
-    swordSlot.style.backgroundImage = "url('/sword_icon.png')";
+    swordSlot.style.backgroundImage = "url('/items/sword_icon.png')";
 
     cooldownOverlay = document.createElement('div');
     cooldownOverlay.className = 'cooldown-overlay';
