@@ -1,7 +1,7 @@
 import { Item } from './item.js';
 
 export class Weapon extends Item {
-    constructor(name, minDamage, maxDamage, cooldown, icon = '/sword_icon.png', price = 0) {
+    constructor(name, minDamage, maxDamage, cooldown, icon = '/items/sword_icon.png', price = 0) {
         super(name, 'weapon', icon, price);
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
@@ -16,7 +16,7 @@ export class Weapon extends Item {
 
 export class BasicSword extends Weapon {
     constructor() {
-        super('Basic Sword', 2, 4, 0.5, '/sword_icon.png');
+        super('Basic Sword', 2, 4, 0.5, '/items/sword_icon.png');
         this.itemId = 'basic_sword';
     }
 }

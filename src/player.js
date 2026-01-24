@@ -69,6 +69,7 @@ export class Player {
         this.logger = null; // Callback for addLog
         this.discoveredTiles = new Set(); // Stores "x,z" strings
         this._initListeners(domElement);
+        this.updateUI();
     }
 
     _initListeners(domElement) {

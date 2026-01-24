@@ -238,12 +238,17 @@ html {
 }
 
 .cooldown-overlay.secondary {
-  background: rgba(52, 152, 219, 0.4);
-  /* Blue-ish */
+  background: rgba(230, 126, 34, 0.4);
+  /* Distinct Orange */
   z-index: 2;
-  width: 50%;
-  /* Only half to see both if they overlap? Or just full width? */
-  left: 50%;
+  width: 100%;
+  left: 0;
+  height: 0%;
+}
+
+#power-ready-glow {
+  /* Ensure this is on top of slots */
+  z-index: 100;
 }
 
 #backpack {
