@@ -184,6 +184,23 @@ function initSplashScreen() {
         removeBtn.disabled = true;
         addLog("Dungeon save wiped from existence.");
     };
+
+    // Game Over & Victory handlers
+    const newGameBtn = document.getElementById('new-game-btn');
+    if (newGameBtn) {
+        newGameBtn.onclick = () => {
+            localStorage.removeItem('dungeon_save');
+            location.reload(); // Simplest way to ensure a fresh state
+        };
+    }
+
+    const playAgainBtn = document.getElementById('play-again-btn');
+    if (playAgainBtn) {
+        playAgainBtn.onclick = () => {
+            localStorage.removeItem('dungeon_save');
+            location.reload();
+        };
+    }
 }
 
 // --- Interaction Handlers ---
