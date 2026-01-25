@@ -74,3 +74,11 @@ Manage your gear in the HUD to survive deeper floors:
 - `src/maps/`: Text-based level layouts.
 
 Good luck, adventurer. May the light guide you through Kaerith's Labyrinth.
+
+---
+
+## 📜 License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/) license.
+
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
