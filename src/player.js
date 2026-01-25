@@ -92,7 +92,6 @@ export class Player {
 
             // Debug detection
             if (key === 'm' || code === 'KeyM') {
-                if (this.logger) this.logger("M Input Detected!");
                 this.toggleMap();
                 event.preventDefault();
                 event.stopPropagation();
@@ -101,7 +100,6 @@ export class Player {
 
             if (key === 'g' || code === 'KeyG') {
                 this.isGodMode = !this.isGodMode;
-                if (this.logger) this.logger(this.isGodMode ? "God Mode: ON" : "God Mode: OFF");
                 this.updateUI();
                 event.preventDefault();
                 event.stopPropagation();
@@ -924,7 +922,7 @@ export class Player {
         const centerX = width / 2;
         const centerY = height / 2;
 
-        // Draw discovered tiles
+        // Draw discovered tiles (persists even if LOS is lost)
         this.discoveredTiles.forEach(key => {
             const parts = key.split(',');
             const tx = parseInt(parts[0]);
@@ -963,17 +961,14 @@ export class Player {
     }
 
     toggleMap() {
-        if (this.logger) this.logger(`DEBUG: toggleMap called. Current state: ${this.isMapOpen}`);
         this.isMapOpen = !this.isMapOpen;
         const overlay = document.getElementById('full-map-overlay');
         const instructions = document.getElementById('instructions');
 
-        if (!overlay && this.logger) this.logger("ERROR: full-map-overlay not found!");
 
         if (overlay) {
             overlay.style.display = this.isMapOpen ? 'flex' : 'none';
             if (this.isMapOpen) {
-                if (this.logger) this.logger("Rendering Map Overlay...");
                 this.renderFullMap();
                 if (this.controls.isLocked) this.controls.unlock();
                 // Ensure instructions don't block the map
@@ -1009,7 +1004,7 @@ export class Player {
         const offsetX = (width - mapWidth * scale) / 2;
         const offsetY = (height - mapHeight * scale) / 2;
 
-        // Draw map (Only Discovered)
+        // Draw map (All Discovered)
         map.forEach((row, z) => {
             [...row].forEach((char, x) => {
                 if (!this.discoveredTiles.has(`${x},${z}`)) return;
@@ -1048,13 +1043,19 @@ export class Player {
     _hasLOS(x0, z0, x1, z1, map) {
         const dist = Math.sqrt((x1 - x0) ** 2 + (z1 - z0) ** 2);
         if (dist === 0) return true;
-        const steps = Math.ceil(dist * 2);
+
+        // Characters that block sight
+        const blocking = ['*', 'O', '0', '-'];
+
+        const steps = Math.ceil(dist * 2.5); // Slightly higher density for safety
         for (let i = 1; i < steps; i++) {
             const tx = Math.round(x0 + (x1 - x0) * (i / steps));
             const tz = Math.round(z0 + (z1 - z0) * (i / steps));
+
             if (tx === x1 && tz === z1) return true;
-            if (map[tz] && map[tz][tx] === '*') {
-                return false; // Path blocked by wall
+
+            if (map[tz] && blocking.includes(map[tz][tx])) {
+                return false; // Path blocked
             }
         }
         return true;
