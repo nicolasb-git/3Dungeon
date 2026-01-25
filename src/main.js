@@ -152,22 +152,50 @@ function initSplashScreen() {
     if (!rawSave) {
         spawnBtn.disabled = true;
         removeBtn.disabled = true;
+    } else {
+        const saveData = JSON.parse(rawSave);
+        const cost = (saveData.level || 1) * 25;
+        spawnBtn.innerHTML = `SPAWN (${cost} G)`;
+        if (saveData.gold < cost) {
+            spawnBtn.disabled = true;
+            spawnBtn.title = "Insufficient gold to resume";
+        }
     }
 
     const startGame = (isResume = false) => {
-        splash.style.display = 'none';
-        document.getElementById('hud').style.display = 'flex';
-        window.removeEventListener('mousedown', tryPlayMusic);
-        window.removeEventListener('keydown', tryPlayMusic);
-        menuMusic.pause();
-        menuMusic.currentTime = 0;
-
         if (isResume) {
-            const saveData = JSON.parse(localStorage.getItem('dungeon_save'));
-            state.currentLevel = saveData.level;
-            player.loadSaveData(saveData, ITEMS, createItem);
+            const currentSave = JSON.parse(localStorage.getItem('dungeon_save'));
+            const cost = (currentSave.level || 1) * 25;
+
+            if (currentSave.gold < cost) {
+                addLog("You don't have enough gold to bribe the Labyrinth...");
+                return;
+            }
+
+            // Deduct and save immediately
+            currentSave.gold -= cost;
+            localStorage.setItem('dungeon_save', JSON.stringify(currentSave));
+
+            splash.style.display = 'none';
+            document.getElementById('hud').style.display = 'flex';
+            window.removeEventListener('mousedown', tryPlayMusic);
+            window.removeEventListener('keydown', tryPlayMusic);
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+
+            state.currentLevel = currentSave.level;
+            player.loadSaveData(currentSave, ITEMS, createItem);
+            player.updateUI();
+            addLog(`The Labyrinth accepts your tribute of ${cost} G.`);
             addLog(`Resuming your journey on Floor ${state.currentLevel}...`);
         } else {
+            splash.style.display = 'none';
+            document.getElementById('hud').style.display = 'flex';
+            window.removeEventListener('mousedown', tryPlayMusic);
+            window.removeEventListener('keydown', tryPlayMusic);
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+
             state.currentLevel = 1;
             addLog("Starting a new journey...");
         }
