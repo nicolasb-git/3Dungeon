@@ -13,6 +13,11 @@ export function setupVendor(player, currentLevel, addLog, updateHUD) {
         shopListEl.innerHTML = '';
         sellListEl.innerHTML = '';
 
+        const vendorGoldVal = document.getElementById('vendor-gold-val');
+        if (vendorGoldVal) {
+            vendorGoldVal.innerText = player.gold;
+        }
+
         Object.values(ITEMS).forEach(item => {
             if (item.id.startsWith('heavy_') && currentLevel.value < 12) return;
 

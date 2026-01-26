@@ -168,7 +168,7 @@ function initSplashScreen() {
             const cost = (currentSave.level || 1) * 25;
 
             if (currentSave.gold < cost) {
-                addLog("You don't have enough gold to bribe the Labyrinth...");
+                addLog("You don't have enough gold to bribe the Maze...");
                 return;
             }
 
@@ -186,7 +186,7 @@ function initSplashScreen() {
             state.currentLevel = currentSave.level;
             player.loadSaveData(currentSave, ITEMS, createItem);
             player.updateUI();
-            addLog(`The Labyrinth accepts your tribute of ${cost} G.`);
+            addLog(`The Maze accepts your tribute of ${cost} G.`);
             addLog(`Resuming your journey on Floor ${state.currentLevel}...`);
         } else {
             splash.style.display = 'none';

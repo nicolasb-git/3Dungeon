@@ -1,6 +1,6 @@
-# Kaerith's Labyrinth
+# Kaerith's Maze
 
-A dark, immersive 3D dungeon crawler built with Three.js. Navigate through procedural-style levels, fight monsters, collect loot, and manage your equipment as you descend deeper into the labyrinth.
+A dark, immersive 3D dungeon crawler built with Three.js. Navigate through procedural-style levels, fight monsters, collect loot, and manage your equipment as you descend deeper into the maze.
 
 ## 🎮 How to Start
 
@@ -55,7 +55,7 @@ A dark, immersive 3D dungeon crawler built with Three.js. Navigate through proce
 - **Save Points:** The game saves your progress every time you descend to a new floor.
 
 #### 💰 Economy & Survival
-- **Bribing the Labyrinth:** If you die or exit the game, the Labyrinth demands a tribute of **25 Gold per Level** to resume your journey.
+- **Bribing the Maze:** If you die or exit the game, the Maze demands a tribute of **25 Gold per Level** to resume your journey.
 - **Vendor:** Collect gold from fallen enemies and sell items you don't need to buy powerful gear and potions.
 
 #### 🛡️ Equipment
@@ -73,7 +73,7 @@ Manage your gear in the HUD to survive deeper floors:
 - `src/gameLogic.js`: Combat and loot systems.
 - `src/maps/`: Text-based level layouts.
 
-Good luck, adventurer. May the light guide you through Kaerith's Labyrinth.
+Good luck, adventurer. May the light guide you through Kaerith's Maze.
 
 ---
 

@@ -639,6 +639,14 @@ html {
   filter: brightness(1.1);
 }
 
+#vendor-gold {
+  font-size: 24px;
+  color: #f1c40f;
+  margin-bottom: 20px;
+  font-weight: 900;
+  text-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+}
+
 #vendor-container {
   display: flex;
   gap: 40px;

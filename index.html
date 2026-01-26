@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kaerith's Labyrinth</title>
+  <title>Kaerith's Maze</title>
 </head>
 
 <body>
@@ -36,12 +36,13 @@
     </div>
     <div id="victory" class="overlay">
       <h1>VICTORY</h1>
-      <p>You have escaped the labyrinth!</p>
+      <p>You have escaped the maze!</p>
       <button id="play-again-btn">Play Again</button>
     </div>
 
     <div id="vendor-overlay" class="overlay">
       <h1>SLY VENDOR</h1>
+      <div id="vendor-gold">GOLD: <span id="vendor-gold-val">0</span></div>
       <div id="vendor-container">
         <div class="vendor-section">
           <h2>BUY ITEMS</h2>
@@ -64,7 +65,7 @@
     </div>
 
     <div id="splash-screen" class="overlay" style="display: flex;">
-      <h1>KAERITH'S LABYRINTH</h1>
+      <h1>KAERITH'S MAZE</h1>
       <div class="button-column">
         <button id="start-game-btn">START</button>
         <button id="spawn-game-btn">SPAWN</button>
