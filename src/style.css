@@ -233,7 +233,6 @@ html {
   /* Default height */
   background: rgba(128, 128, 128, 0.6);
   pointer-events: none;
-  transition: height 0.1s linear;
   z-index: 1;
 }
 
