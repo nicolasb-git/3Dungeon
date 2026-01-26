@@ -59,17 +59,33 @@ A dark, immersive 3D dungeon crawler built with Three.js. Navigate through proce
 - **Vendor:** Collect gold from fallen enemies and sell items you don't need to buy powerful gear and potions.
 
 #### 🛡️ Equipment
-Manage your gear in the HUD to survive deeper floors:
-- **Weapons:** Primary source of damage.
-- **Armor:** Reduces incoming damage from monsters.
-- **Consumables:** Keep health potions in your backpack for emergencies.
+- **Right Hand:** Your primary weapon.
+- **Left Hand:** Shields or off-hand items.
+- **Armor Slots:** Head, Torso, Shoulders, Legs, and Boots.
 
----
+## 🗺️ Adding New Levels
+
+Levels are defined as simple text files located in `src/maps/`. To add a new level:
+
+1.  Create a new file named `{next_level_number}.txt` (e.g., `15.txt`) in the `src/maps/` directory.
+2.  Use the following character mapping to design your maze:
+
+| Character | Description |
+| :--- | :--- |
+| `*` | **Wall**: Solid block that blocks movement and sight. |
+| `-` | **Secret Wall**: Looks like a wall but has no collision (walk-through). |
+| `X` | **Starting Point**: Where the player spawns when entering the floor. |
+| `O` | **Exit Door**: Stepping here teleports the player to the next floor. |
+| `B` | **Boss Spawn**: Specific tile where the floor boss will spawn. |
+| `0` | **Boss Exit**: An exit that only becomes visible/active after the boss is defeated. |
+| ` ` | **Floor**: Empty space. Monsters will spawn randomly on these tiles. |
+
+**Note:** The level logic automatically applies different themes based on the floor number (e.g., Floors 12+ use "Ancient" textures).
 
 ## 🛠️ Project Structure
-- `src/main.js`: Main entry point and game loop.
-- `src/player.js`: Player logic, movement, and map rendering.
-- `src/dungeon.js`: 3D Environment generation.
+- `src/main.js`: Main game loop and UI initialization.
+- `src/dungeon.js`: Map parsing and 3D environment generation.
+- `src/player.js`: Movement, collision, and player stats.
 - `src/gameLogic.js`: Combat and loot systems.
 - `src/maps/`: Text-based level layouts.
 
