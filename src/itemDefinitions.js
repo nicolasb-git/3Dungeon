@@ -179,7 +179,7 @@ export const ITEMS = {
         itemClass: 'Weapon',
         minDamage: 5,
         maxDamage: 8,
-        cooldown: 0.6,
+        cooldown: 0.5,
         price: 250,
         icon: '/items/heavy_sword_icon.png'
     },
@@ -189,7 +189,7 @@ export const ITEMS = {
         itemClass: 'Weapon',
         minDamage: 12,
         maxDamage: 18,
-        cooldown: 0.5,
+        cooldown: 0.4,
         price: 1800,
         icon: '/items/heavy_superior_sword_icon.png'
     },

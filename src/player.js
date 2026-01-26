@@ -1104,7 +1104,15 @@ export class Player {
         // Restore Equipment
         for (const slot in data.equipment) {
             const id = data.equipment[slot];
-            this.equipment[slot] = id ? createItem(ITEMS[id]) : null;
+            const item = id ? createItem(ITEMS[id]) : null;
+            this.equipment[slot] = item;
+            if (slot === 'r-hand' && item) {
+                this.weapon = item;
+                this.maxAttackCooldown = item.cooldown;
+            } else if (slot === 'r-hand' && !item) {
+                this.weapon = this.charClass.weapon;
+                this.maxAttackCooldown = this.weapon.cooldown;
+            }
         }
 
         this.updateUI();
