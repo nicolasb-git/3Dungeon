@@ -10,16 +10,34 @@ export function spawnMonsters(scene, dungeon, levelIndex, monstersArray, addLog)
     const startPos = dungeon.getStartPosition();
 
     if (!bossSpawn) {
-        const numMonsters = 1 + levelIndex;
         const emptySpaces = dungeon.getEmptySpaces();
-        const validSpaces = emptySpaces.filter(s => {
+        let validSpaces = emptySpaces.filter(s => {
             const dist = Math.sqrt(Math.pow(s.x - startPos.x, 2) + Math.pow(s.z - startPos.z, 2));
             return dist >= 3;
         });
 
-        for (let i = 0; i < numMonsters && validSpaces.length > 0; i++) {
-            const rndIdx = Math.floor(Math.random() * validSpaces.length);
-            const spot = validSpaces.splice(rndIdx, 1)[0];
+        const numMonsters = Math.max(1, Math.floor(validSpaces.length / 15));
+        const spawnedMonsterPositions = [];
+
+        for (let i = 0; i < numMonsters; i++) {
+            // Filter valid spaces to ensure 3-tile distance from other monsters
+            const strictlyValidSpaces = validSpaces.filter(s => {
+                for (const pos of spawnedMonsterPositions) {
+                    const dist = Math.sqrt(Math.pow(s.x - pos.x, 2) + Math.pow(s.z - pos.z, 2));
+                    if (dist < 3) return false;
+                }
+                return true;
+            });
+
+            if (strictlyValidSpaces.length === 0) break;
+
+            const rndIdx = Math.floor(Math.random() * strictlyValidSpaces.length);
+            const spot = strictlyValidSpaces[rndIdx];
+
+            // Remove the selected spot from validSpaces
+            validSpaces = validSpaces.filter(s => s !== spot);
+            spawnedMonsterPositions.push({ x: spot.x, z: spot.z });
+
             const monsterPos = new THREE.Vector3(spot.x, 0, spot.z);
 
             const available = Object.entries(MONSTERS)
@@ -41,7 +59,7 @@ export function spawnMonsters(scene, dungeon, levelIndex, monstersArray, addLog)
             if (type === 'knight_skeleton') addLog(`A powerful presence emerges... a Skeletal Knight!`);
             else if (type === 'cultist') addLog(`A dark ritual is whispered... a Dark Cultist enters!`);
 
-            const monster = new Monster(scene, monsterPos, type);
+            const monster = new Monster(scene, monsterPos, type, levelIndex);
             monster.maxHp += (levelIndex - 1) * 20;
             monster.hp = monster.maxHp;
             monster.attackDamage.min += (levelIndex - 1) * 2;
@@ -49,7 +67,7 @@ export function spawnMonsters(scene, dungeon, levelIndex, monstersArray, addLog)
             monstersArray.push(monster);
         }
     } else if (levelIndex === 11) {
-        const boss = new Monster(scene, bossSpawn, 'skeletal_boss');
+        const boss = new Monster(scene, bossSpawn, 'skeletal_boss', levelIndex);
         monstersArray.push(boss);
         addLog("A TERRIFYING presence fills the air... The Lord of Rattles has appeared!");
     }

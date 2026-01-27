@@ -5,10 +5,11 @@ import { Weapon } from './weapon.js';
 import { MONSTERS } from './monsterDefinitions.js';
 
 export class Monster {
-    constructor(scene, position, type = 'shadow') {
+    constructor(scene, position, type = 'shadow', levelIndex = 1) {
         this.scene = scene;
         this.initialPosition = position.clone();
         this.type = type;
+        this.levelIndex = levelIndex;
         this.spottedPlayer = false;
         this.attackCooldown = 0;
         this.currentState = 'idle';
@@ -246,8 +247,10 @@ export class Monster {
     getLoot() {
         const table = LOOT_CONFIG[this.type] || [];
         const results = [];
+        const bonus = (this.levelIndex <= 3) ? 0.10 : 0;
+
         for (const drop of table) {
-            if (Math.random() < drop.chance) {
+            if (Math.random() < (drop.chance + bonus)) {
                 if (drop.type === 'gold') {
                     const amount = Math.floor(Math.random() * (drop.max - drop.min + 1)) + drop.min;
                     results.push({ type: 'gold', amount });
