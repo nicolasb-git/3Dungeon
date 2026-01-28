@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Dungeon - Level Editor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">DUNGEON EDITOR</div>
+        <div class="controls">
+            <div class="save-group">
+                <label for="floor-num">Floor #</label>
+                <input type="number" id="floor-num" value="17" min="1"
+                    style="width: 60px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; padding: 4px; border-radius: 4px; margin-right: 10px;">
+                <button id="btn-save-project" class="primary" style="background: #22c55e;">Save to Project</button>
+            </div>
+            <button id="btn-new">New Map</button>
+            <button id="btn-open">Open Map</button>
+            <button id="btn-save">Export .txt</button>
+        </div>
+    </header>
+
+    <main>
+        <aside>
+            <section>
+                <h3>Tool Palette</h3>
+                <div class="palette">
+                    <div class="tool tool-wall active" data-char="*">
+                        <div class="tool-preview">*</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Wall</span>
+                            <span class="tool-key">Cmd + 1</span>
+                        </div>
+                    </div>
+                    <div class="tool tool-floor" data-char=" ">
+                        <div class="tool-preview">_</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Floor</span>
+                            <span class="tool-key">Cmd + 2</span>
+                        </div>
+                    </div>
+                    <div class="tool tool-secret" data-char="-">
+                        <div class="tool-preview">-</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Secret Wall</span>
+                            <span class="tool-key">Cmd + 3</span>
+                        </div>
+                    </div>
+                    <div class="tool tool-start" data-char="X">
+                        <div class="tool-preview">X</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Player Start</span>
+                            <span class="tool-key">Cmd + 4</span>
+                        </div>
+                    </div>
+                    <div class="tool tool-exit" data-char="O">
+                        <div class="tool-preview">O</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Level Exit</span>
+                            <span class="tool-key">Cmd + 5</span>
+                        </div>
+                    </div>
+                    <div class="tool tool-boss" data-char="B">
+                        <div class="tool-preview">B</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Boss Spawn</span>
+                            <span class="tool-key">Cmd + 6</span>
+                        </div>
+                    </div>
+                    <div class="tool tool-boss-exit" data-char="0">
+                        <div class="tool-preview">0</div>
+                        <div class="tool-info">
+                            <span class="tool-name">Boss Exit</span>
+                            <span class="tool-key">Cmd + 7</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Map Info</h3>
+                <div id="map-stats">
+                    <p>Size: <span id="stat-size">0x0</span></p>
+                    <p>Total Tiles: <span id="stat-tiles">0</span></p>
+                </div>
+            </section>
+        </aside>
+
+        <div id="editor-viewport">
+            <div id="grid"></div>
+        </div>
+    </main>
+
+    <div class="status-bar">
+        <div id="status-pos">Pos: 0, 0</div>
+        <div id="status-msg">Welcome to Dungeon Editor</div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-new" class="modal-overlay">
+        <div class="modal">
+            <h2>New Dungeon Map</h2>
+            <div class="form-group">
+                <label>Width</label>
+                <input type="number" id="new-width" value="20" min="5" max="100">
+            </div>
+            <div class="form-group">
+                <label>Height</label>
+                <input type="number" id="new-height" value="20" min="5" max="100">
+            </div>
+            <div class="modal-actions">
+                <button id="new-cancel">Cancel</button>
+                <button id="new-confirm" class="primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="file-input" style="display: none" accept=".txt">
+
+    <script src="editor.js"></script>
+</body>
+
+</html>

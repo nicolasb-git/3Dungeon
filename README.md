@@ -82,6 +82,21 @@ Levels are defined as simple text files located in `src/maps/`. To add a new lev
 
 **Note:** The level logic automatically applies different themes based on the floor number (e.g., Floors 12+ use "Ancient" textures).
 
+## 🛠️ Level Editor
+
+The game includes a built-in **Level Editor** to help you design new maps visually.
+
+### How to use:
+1. Click the **LEVEL EDITOR** button on the game's splash screen, or navigate to `/editor/` in your browser.
+2. Select tools from the palette (or use hotkeys **Cmd+1** through **Cmd+7**).
+3. Draw your map on the grid.
+4. **Save your work:**
+   - **Local Development:** Type a level number in the **Floor #** box and click **Save to Project**. This automatically saves the file to `src/maps/`.
+   - **Production/Offline:** Use **Export .txt** to download your map. You can then manually move it to `src/maps/` and rename it.
+5. **Validation:** The editor will ensure you have a **Player Start (X)** and warn you if an **Exit (O)** is missing.
+
+> **Note:** "Save to Project" requires the local development server (`npm run dev`) to be running.
+
 ## 🛠️ Project Structure
 - `src/main.js`: Main game loop and UI initialization.
 - `src/dungeon.js`: Map parsing and 3D environment generation.
