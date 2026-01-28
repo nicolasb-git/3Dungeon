@@ -215,27 +215,29 @@ h3 {
 
 #editor-viewport {
     flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image:
-        radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
-    background-size: 32px 32px;
     overflow: auto;
     padding: 4rem;
+    background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+    background-size: 32px 32px;
+    display: grid;
+    place-items: center;
+    /* Robust centering that respects content size */
 }
 
 #grid {
     display: grid;
-    background-color: var(--border-color);
-    gap: 1px;
-    border: 1px solid var(--border-color);
+    background-color: transparent;
+    border-top: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .cell {
     width: 32px;
     height: 32px;
+    box-sizing: border-box;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     background-color: var(--bg-color);
     cursor: crosshair;
     transition: background-color 0.1s;
@@ -243,8 +245,10 @@ h3 {
     align-items: center;
     justify-content: center;
     font-size: 10px;
+    line-height: 1;
     font-weight: bold;
     user-select: none;
+    overflow: hidden;
 }
 
 .cell:hover {
